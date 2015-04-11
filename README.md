@@ -1,0 +1,1 @@
+# LewaOS6_spanish
