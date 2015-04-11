@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">"LIP-servicio"</string>
+
+    <string name="download">"Cargando"</string>
+    <string name="notification_have_update">"Puede actualizar!"</string>
+    <string name="notification_update_all">"Aplicaciones"</string>
+    <string name="notification_update_game">" Actualizar Juego"</string>
+    <string name="notification_etc">"adicional"</string>
+    <string name="notification_have_new_version">"Hay una nueva versión"</string>
+    <string name="no_network">"No se puede conectar a la red"</string>
+    <string name="in_the_mobile_network_environment">"Se utiliza la transmisión de datos, es posible el consumo de ancho de banda. ¿Continuar?"</string>
+    <string name="download_prompt">"Descarga Resolución"</string>
+    <string name="confirm">"Confirmar"</string>
+    <string name="cancel">"Cancelación"</string>
+    <string name="install">"Ajuste"</string>
+    <string name="download_now">"Descargar"</string>
+
+
+
+
+
+
+</resources>

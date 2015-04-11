@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="modes_array">
+        <item>Interceptar llamadas y mensajes</item>
+        <item>Cojer llamadas</item>
+        <item>Interceptación de las comunicaciones</item>
+    </string-array>
+    <string-array name="black_items">
+        <item>No-Intercepción</item>
+        <item>Interceptar Grupos</item>
+    </string-array>
+    <string-array name="number_list">
+        <item>Lista Negra</item>
+        <item>Lista Blanca</item>
+    </string-array>
+    <string-array name="block_information_list">
+        <item>Mensajes</item>
+        <item>llamadas</item>
+    </string-array>
+    <integer-array name="modes_array_int">
+        <item>3</item>
+        <item>1</item>
+        <item>2</item>
+    </integer-array>
+</resources>

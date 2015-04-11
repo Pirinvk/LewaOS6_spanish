@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="batteryWarning_label">BatteryWarning</string>
+    <string name="title_charger_over_voltage">Con el cargador corriente</string>
+    <string name="title_battery_over_temperature">Más temperatura en la batería</string>
+    <string name="title_over_current_protection">Sobre la protección actual</string>
+    <string name="title_battery_over_voltage">Sobre el voltaje de la batería</string>
+    <string name="title_safety_timer_timeout">Con el Tiempo de carga</string>
+    <string name="title_battery_low_temperature">Temperatura Batería baja</string>
+    <string name="msg_charger_over_voltage">Su cargador esta caliente, por favor desconecte el cargador!</string>
+    <string name="msg_battery_over_temperature">La batería está demasiado caliente, retire la batería!</string>
+    <string name="msg_over_current_protection"> Su batería está en sobreprotección actualmente, por favor retire la batería</string>
+    <string name="msg_battery_over_voltage">Su batería esta sobrecalentada, por favor retire la batería!</string>
+    <string name="msg_safety_timer_timeout">El tiempo de carga es demasiado largo, por favor desconecte el cargador!</string>
+    <string name="msg_battery_low_temperature">La temperatura de la batería es demasiado bajo, desconecte el cargador!</string>
+    <string name="btn_ok_msg">Para mas tarde</string>
+    <string name="btn_cancel_msg">Descartar</string>
+     <string name="title_power_weak">Cargador de batería incorrecto</string>
+    <string name="msg_power_weak">Para evitar lesiones , utilice únicamente los cargadores apropiados!</string>
+    <string name="title_battery_below_temperature">La temperatura es demasiado baja</string>
+</resources>

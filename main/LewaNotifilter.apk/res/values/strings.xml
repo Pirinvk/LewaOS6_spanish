@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ok">"Aceptar"</string>
+    <string name="notifilter_setting">"Notificación ajustes de los filtros"</string>
+    <string name="notifilter_activity_title">"Notificación ajustes de los filtros"</string>
+    <string name="notifilter_cloud">"Notificaciones de interceptación de la nube"</string>
+    <string name="notifilter_addtoblack">"Añadir a la lista negra"</string>
+    <string name="notifilter_del">"Eliminar de la lista negro"</string>
+    <string name="notifilter_allow">"Resolver"</string>
+    <string name="notifilter_denie">"Rechazar"</string>
+    <string name="notifilter_item_activity">"Administrador de notificaciones"</string>
+    <string name="notifilter_cloudtip">"La base intelectual de la publicidad para interceptar y bloquear las notificaciones. Última versión:"</string>
+    <string name="notifilter_cloudloading">"Arranque desde la nube ..."</string>
+    <string name="notifilter_cloudlasttime">"Última descarga:"</string>
+    <string name="menu_actionbar_selected_items">"%s seleccionado"</string>
+    <string name="app_name">"Notificación"</string>
+    <string name="hello_world">"Hola Mundo!"</string>
+    <string name="action_settings">"Ajustes"</string>
+</resources>

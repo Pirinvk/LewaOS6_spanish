@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="bg_choise">
+        <item>"Gotas"</item>
+        <item>"Sueño"</item>
+        <item>"Crepúsculo"</item>
+        <item>"Ámbar"</item>
+    </string-array>
+    <string-array name="bg_choise_value">
+        <item>"0"</item>
+        <item>"1"</item>
+        <item>"2"</item>
+        <item>"3"</item>
+    </string-array>
+    <string-array name="shake_degree">
+        <item>"1.0f"</item>
+        <item>"0.5f"</item>
+    </string-array>
+    <string-array name="select_photo">
+        <item>"Cámara"</item>
+        <item>"Seleccione de Galería"</item>
+    </string-array>
+    <string-array name="select_photo_judge">
+        <item>"Reajustar"</item>
+        <item>"Eliminación"</item>
+    </string-array>
+    <string-array name="eq_genres">
+        <item>"No No Lo Estoy"</item>
+        <item>"Total"</item>
+        <item>"Clásico"</item>
+        <item>"La Danza. la música"</item>
+        <item>"Música folclórica"</item>
+        <item>"Metal pesado"</item>
+        <item>"Hip hop"</item>
+        <item>"Jazz"</item>
+        <item>"Música pop"</item>
+        <item>"Roca"</item>
+        <item>"Modo de usuario"</item>
+    </string-array>
+    <string-array name="weeklist">
+        <item>"1 semana"</item>
+        <item>"2 semanas"</item>
+        <item>"3 semanas"</item>
+        <item>"4 semanas"</item>
+        <item>"5 semanas"</item>
+        <item>"6 semanas"</item>
+        <item>"7 semanas"</item>
+        <item>"8 semanas"</item>
+        <item>"9 semanas"</item>
+        <item>"10 semanas"</item>
+        <item>"11 semanas"</item>
+        <item>"12 semanas"</item>
+    </string-array>
+    <string-array name="download_method">
+        <item>"Wi-Fi sólo"</item>
+        <item>"Permitir todo"</item>
+    </string-array>
+    <string-array name="download_method_value">
+        <item>"0"</item>
+        <item>"1"</item>
+    </string-array>
+</resources>

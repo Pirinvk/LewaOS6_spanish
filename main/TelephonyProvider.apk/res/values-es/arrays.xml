@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="default_quick_texts">
+        <item>¿Dónde estás?</item>
+        <item>¿Que haces?</item>
+        <item>Lamame urgente!</item>
+        <item>Estoy en una reunión</item>
+        <item>Estoy ocupado , llamaré más tarde</item>
+        <item>Estoy bien</item>
+        <item>Estoy en el camino a casa</item>
+        <item>No puedo hablar</item>
+        <item>Estoy conduciendo</item>
+        <item>Estoy ocupado,¿algo urgente?</item>
+        <item>Estoy ocupado,¿qué pasó?</item>
+    </string-array>
+</resources>

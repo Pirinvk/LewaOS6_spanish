@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="crypt_keeper_switch_input_method">"Cambiar método de entrada"</string>
+    <string name="lock_settings_picker_title">"Tipo de bloqueo"</string>
+    <string name="backup_lock_settings_picker_title">"Extras. el método de bloqueo"</string>
+    <string name="unlock_set_unlock_launch_picker_title">"Bloquear pantalla"</string>
+    <string name="unlock_set_unlock_launch_picker_change_title">"Cambio de la unidad. Pantalla"</string>
+    <string name="unlock_set_unlock_launch_picker_change_summary">"Cambie o desactivar las teclas gráficas, código PIN y contraseña"</string>
+    <string name="unlock_set_unlock_launch_picker_enable_summary">"Elija un método para bloquear la pantalla"</string>
+    <string name="unlock_backup_info_summary">"Seleccione una forma alternativa para desbloquear la pantalla"</string>
+    <string name="unlock_set_unlock_off_title">"No"</string>
+
+    <string name="unlock_set_unlock_none_title">"Discapacitado"</string>
+    <string name="unlock_set_unlock_none_summary">"Protección está deshabilitado"</string>
+    <string name="unlock_set_unlock_biometric_weak_title">"Facecontrol"</string>
+    <string name="unlock_set_unlock_biometric_weak_summary">"Un bajo nivel de protección (experimental)"</string>
+    <string name="unlock_set_unlock_pattern_title">"Clave Gráfico"</string>
+    <string name="unlock_set_unlock_pattern_summary">"El nivel medio de protección"</string>
+    <string name="unlock_set_unlock_pin_title">"PIN-código"</string>
+    <string name="unlock_set_unlock_pin_summary">"El nivel de seguridad de medio a alto"</string>
+    <string name="unlock_set_unlock_password_title">"Contraseña"</string>
+    <string name="unlock_set_unlock_password_summary">"Alto nivel de protección"</string>
+    <string name="unlock_set_unlock_disabled_summary">"Prohibido por el administrador, la política de cifrado, o el almacenamiento de credenciales"</string>
+    <string name="unlock_set_unlock_mode_off">"No"</string>
+    <string name="unlock_set_unlock_mode_none">"Pantalla de bloqueo estándar"</string>
+    <string name="unlock_set_unlock_mode_biometric_weak">"Facecontrol"</string>
+    <string name="unlock_set_unlock_mode_pattern">"Proteja su desbloqueo"</string>
+    <string name="unlock_set_unlock_mode_pin">"Protección de código PIN"</string>
+    <string name="unlock_set_unlock_mode_password">"La protección de contraseña"</string>
+    <string name="unlock_disable_lock_title">"Desactivar la pantalla de bloqueo"</string>
+    <string name="unlock_disable_lock_pattern_summary">"Retire patrón de desbloqueo"</string>
+    <string name="unlock_disable_lock_pin_summary">"Remove-desbloqueo PIN código"</string>
+    <string name="unlock_disable_lock_password_summary">"Eliminar contraseña de desbloqueo"</string>
+    <string name="unlock_change_lock_pattern_title">"Cambiar patrón de desbloqueo"</string>
+    <string name="unlock_change_lock_pin_title">"Cambiar el código PIN para desbloquear"</string>
+    <string name="unlock_change_lock_password_title">"Cambiar contraseña de desbloqueo"</string>
+    <string name="lockpassword_password_too_short">"Al menos %d caracteres"</string>
+    <string name="lockpassword_pin_too_short">"Código PIN debe contener al menos %d caracteres"</string>
+    <string name="lockpassword_press_continue">"Cuando haya terminado, haga clic en \"Continuar\""</string>
+    <string name="lockpassword_continue_label">"Currículum"</string>
+    <string name="lockpassword_password_too_long">"No más de %d caracteres"</string>
+    <string name="lockpassword_pin_too_long">"PIN-código debe contener no más de %d caracteres"</string>
+    <string name="lockpassword_pin_contains_non_digits">"PIN-código debe consistir sólo de dígitos del 0 al 9"</string>
+    <string name="lockpassword_pin_recently_used">"Dispositivo administrador prohíbe el uso de código PIN de la última"</string>
+    <string name="lockpassword_illegal_character">"Contraseña contiene caracteres no válidos"</string>
+    <string name="lockpassword_password_requires_alpha">"La contraseña debe contener al menos una letra"</string>
+    <string name="lockpassword_password_requires_digit">"La contraseña debe contener al menos un dígito"</string>
+    <string name="lockpassword_password_requires_symbol">"La contraseña debe contener al menos un carácter"</string>
+    <string name="lockpassword_password_recently_used">"Prohíbe el uso de la contraseña de administrador del dispositivo dura"</string>
+    <string name="lockpassword_ok_label">"Aceptar"</string>
+    <string name="lockpassword_cancel_label">"Cancelación"</string>
+    <string name="lockpattern_tutorial_cancel_label">"Cancelación"</string>
+    <string name="lockpattern_tutorial_continue_label">"Adicional"</string>
+    <string name="lockpattern_change_lock_pattern_label">"Cambiar clave"</string>
+    <string name="lockpattern_change_lock_pin_label">"Cambiar el código PIN para desbloquear"</string>
+    <string name="lockpattern_need_to_unlock">"Dibuja una clave existente"</string>
+
+    <string name="lockpattern_need_to_unlock_wrong">"Repetir:"</string>
+
+    <string name="lockpattern_recording_intro_header">"Dibuja un patrón de desbloqueo"</string>
+    <string name="lockpattern_recording_intro_footer">"Para obtener ayuda, pulse \"Menú\""</string>
+    <string name="lockpattern_recording_inprogress">"Al terminar, suelte el dedo"</string>
+    <string name="lockpattern_recording_incorrect_too_short">"Conecta los puntos (mínimo %d). Inténtalo de nuevo:"</string>
+    <string name="lockpattern_pattern_entered_header">"Desbloquear salvado!"</string>
+    <string name="lockpattern_need_to_confirm">"Para confirmar la re-dibujar el patrón de desbloqueo:"</string>
+    <string name="lockpattern_pattern_confirmed_header">"Nuevo patrón de desbloqueo:"</string>
+    <string name="lockpattern_confirm_button_text">"Confirmar"</string>
+    <string name="lockpattern_restart_button_text">"Jugar de nuevo"</string>
+    <string name="lockpattern_retry_button_text">"Repetición"</string>
+    <string name="lockpattern_continue_button_text">"Currículum"</string>
+    <string name="lockpattern_settings_title">"Descubrir"</string>
+    <string name="lockpattern_settings_enable_title">"Clave Prompt"</string>
+    <string name="lockpattern_settings_enable_summary">"Utilice la tecla gráfica para proteger su teléfono"</string>
+    <string name="lockpattern_settings_enable_visible_pattern_title">"Muestre su desbloqueo"</string>
+    <string name="lockpattern_settings_enable_tactile_feedback_title">"Vibrar al tocar"</string>
+    <string name="lockpattern_settings_enable_power_button_instantly_locks">"Botón de bloqueo de alimentación"</string>
+    <string name="lockpattern_settings_choose_lock_pattern">"Instalar llave"</string>
+    <string name="lockpattern_settings_change_lock_pattern">"Cambiar clave"</string>
+    <string name="lockpattern_settings_help_how_to_record">"Cómo dibujar un patrón de desbloqueo"</string>
+    <string name="lockpattern_too_many_failed_confirmation_attempts_header">"Demasiados intentos fallidos!"</string>
+    <string name="lockpattern_too_many_failed_confirmation_attempts_footer">"Vuelve a intentarlo en %d segundos."</string>
+    <string name="lock_setup">"Configuración finalizada"</string>
+    <string name="app_name">"Boloqueo de Lewa"</string>
+    <string name="cancel">"Repetición"</string>
+    <string name="unlock_set_unlock_screen_title">"Utilizando lokskrina"</string>
+    <string name="no_applications">"No hay aplicaciones"</string>
+    <string name="settings_safetylegal_activity_loading">"Cargando ..."</string>
+    <string name="change_password_text">"Enmendar"</string>
+    <string name="forget_password_text">"Cancelación"</string>
+    <string name="manager_app_lock">"Aplicación Contraseña"</string>
+    <string name="cancel_password">"Cancelado con éxito"</string>
+    <string name="pattern_screen_password">"Utilizando las teclas gráficas"</string>
+    <string name="password_screen_password">"Uso de una contraseña"</string>
+    <string name="no_message">"Ningún mensaje"</string>
+
+
+
+
+
+
+
+
+
+
+    <string name="please_input_pwd">"Introducir la contraseña"</string>
+    <string name="input_again">"Superalo"</string>
+    <string name="user_delete_button">"Quitar"</string>
+    <string name="app_lock_settings">"Ajustes"</string>
+    <string name="lewa_applock_summary">"Abrir una aplicación bloqueado requiere una contraseña y fuera de la pantalla de bloqueo de nuevo la aplicación"</string>
+    <string name="lewa_applock_title">"Bloqueo de aplicaciones"</string>
+    <string name="applock_password_title">"Cambiar La Contraseña"</string>
+    <string name="app_lock_header">"Bloqueo en aplicaciones"</string>
+    <string name="lewa_app_locked">"Bloqueado"</string>
+    <string name="lewa_app_unlocked">"Desbloqueado"</string>
+    <string name="icon_loading">"Cargando"</string>
+    <string name="lewa_pim_name">"Información Del Contacto"</string>
+    <string name="lewa_camera_name">"Cámara y Galería"</string>
+    <string name="lewa_pattern_visible_title">"Haga su desbloqueo visible"</string>
+    <string name="lewa_pattern_visible_summary">"Haga su desbloqueo visible cuando se bloquea"</string>
+    <string name="lewa_pattern_feedback_title">"Vibración en contacto"</string>
+    <string name="lewa_pattern_feedback_summary">"Vibración cuando se bloquea"</string>
+</resources>

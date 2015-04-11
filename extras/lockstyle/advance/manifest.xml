@@ -1,0 +1,2406 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Lockscreen version="1" frameRate="30" frameRateBatteryLow="20" screenWidth="720">
+	<VariableBinders>
+		<ContentProviderBinder columns="city,temperature,sort,pmcondition" countName="hasWeather" uri="content://com.lewa.weather" notifyUri="content://com.lewa.weather">
+			<Variable name="weather_city" column="city" type="string"/>
+			<Variable name="weather_temperature" column="temperature" type="string"/>
+			<Variable name="weather_type" column="sort" type="int"/>
+			<Variable name="weather_pm" column="pmcondition" type="string"/>
+		</ContentProviderBinder>
+		
+		<ContentProviderBinder name="lewa_list" uri="content://sms/inbox" columns="_id,address,date,body" where="read=0" order="date DESC">
+	       <ListData binderMixedList="true" mixedItemName="sms_provider"  removeExtra="read:1" replaceUri="content://com.android.contacts/phone_lookup" replace="address:display_name" />
+        </ContentProviderBinder>
+			
+		<ContentProviderBinder  name="lewa_list"  uri="content://call_log/calls" columns="_id,date,number,name,type" where="type=3 AND new=1" order="date DESC" >
+		   <ListData binderMixedList="true" mixedItemName="call_provider"  removeExtra="new:0" defaultData ="name:@unknow_number" />
+	   </ContentProviderBinder>
+	
+	</VariableBinders>
+	
+	<!--<Var name="weather_type" expression="5"/>-->
+    <Var name="showWeather" expression="gt(#weather_type, 0)*lt(isnull(@weather_temperature),1)"/>
+    
+    <!-- <Var name="showWeather" expression="gt(#weather_type, 0)"/>
+    <Var name="weather_type" expression="16"/>  -->
+	<Wallpaper blur="10" blurMaskGradient="#00000000|#ff000000" coverGradient="#00000000|#00000000|#7d000000" visibility="not(#weather_group.visibility)*le(#sms_unread+#miss_call,0)"/>
+	<Wallpaper blur="5" visibility="not(#weather_group.visibility)*ge(#sms_unread+#miss_call,1)"/>
+	<Group name="weather_group" visibility="eq(#isOpenDynaWeather,0)  *not(#music_control.visibility) *#showWeather "> 
+	    
+	<VirtualScreen name="weather_virtualscreen" width="720" height="1280" freeze="true"  >
+
+	   <Image name="bg" x="0" y="0" w="#view_width" h="#view_height"
+        srcExp="'dynamic_weather/bg_'+ifelse((#weather_type-15)*(le(#hour24,5)+ge(#hour24,18)),'sunny_night'
+    ,(#weather_type-15)*ge(#hour24,6)*le(#hour24,17),'sunny'
+	,(#weather_type-14)*(le(#hour24,5)+ge(#hour24,18)),'partly_cloudy'
+	,(#weather_type-14)*ge(#hour24,6)*le(#hour24,17),'sunny'
+	,(#weather_type-13)*(le(#hour24,5)+ge(#hour24,18)),'fog_night'
+	,(#weather_type-13)*ge(#hour24,6)*le(#hour24,17),'sunny'
+	,(#weather_type-11)*(le(#hour24,5)+ge(#hour24,18)),'fog_overcast'
+	,(#weather_type-11)*ge(#hour24,6)*le(#hour24,17),'fog'
+    ,(#weather_type-10)*(le(#hour24,5)+ge(#hour24,18)),'fog_overcast'
+	,(#weather_type-10)*ge(#hour24,6)*le(#hour24,17),'overcast'
+	,(#weather_type-9),'rainlight'
+	,(#weather_type-8)*(le(#hour24,5)+ge(#hour24,18)),'sunny_night'
+	,(#weather_type-8)*ge(#hour24,6)*le(#hour24,17),'snowlight'
+    ,(#weather_type-7)*(le(#hour24,5)+ge(#hour24,18)),'sunny_night'
+	,(#weather_type-7)*ge(#hour24,6)*le(#hour24,17),'rainlight'
+	,(#weather_type-6)*(le(#hour24,5)+ge(#hour24,18)),'sunny_night'
+	,(#weather_type-6)*ge(#hour24,6)*le(#hour24,17),'rainheavy'
+	,(#weather_type-5)*(le(#hour24,5)+ge(#hour24,18)),'sunny_night'
+	,(#weather_type-5)*ge(#hour24,6)*le(#hour24,17),'thunder'
+    ,(#weather_type-4)*(le(#hour24,5)+ge(#hour24,18)),'sunny_night'
+	,(#weather_type-4)*ge(#hour24,6)*le(#hour24,17),'snowheavy'
+	,(#weather_type-3),'rainheavy'
+	,(#weather_type-2)*(le(#hour24,5)+ge(#hour24,18)),'sunny_night'
+	,(#weather_type-2)*ge(#hour24,6)*le(#hour24,17),'rainheavy'
+    ,(#weather_type-1),'haze','sand')+'.png'" />
+	    <Var name="fade_in_anim">
+		<VariableAnimation>
+			<AniFrame value="0" time="0"/>
+			<AniFrame value="255" time="800"/>
+			<AniFrame value="255" time="100000000000"/>
+		</VariableAnimation>
+	</Var>
+	<Var name="fade_out_anim">
+		<VariableAnimation>
+			<AniFrame value="255" time="0"/>
+			<AniFrame value="0" time="800"/>
+			<AniFrame value="0" time="100000000000"/>
+		</VariableAnimation>
+	</Var>
+	<Var name="last_weather" expression="16" const="true"/>
+	<Var name="fade_weather" expression="0" const="true"/>
+	<Var name="fade_trigger" expression="#weather_type" threshold="1">
+		<Trigger>
+			<Command target="fade_in_anim.animation" value="play" condition="eq(#last_weather,#weather_type)"/>
+			<Command target="fade_out_anim.animation" value="play" condition="eq(#last_weather,#weather_type)"/>
+			<VariableCommand name="fade_weather" expression="#last_weather" const="true"/>
+			<VariableCommand name="last_weather" expression="#weather_type" const="true"/>
+		</Trigger>
+	</Var>
+	<!--sunny  6=<time<=17 day ,time<=5|| time>=18 night  -->
+	<Group name="ani_sunny_night" visibility="(eq(#weather_type, 16)+eq(#fade_weather,16))*(ge(#hour24,18)+le(#hour24,5))" alpha="eq(#weather_type, 16) * #fade_in_anim + eq(#fade_weather,16) * #fade_out_anim)">
+		<Image name="sunny_night_moon_1" x="438" y="40" srcExp="'dynamic_weather/sunny_night_moon_'+ifelse(ge(#date_lunar,1)*le(#date_lunar,4),'a',ge(#date_lunar,5)*le(#date_lunar,9),'b',ge(#date_lunar,10)*le(#date_lunar,14),'c',ge(#date_lunar,15)*le(#date_lunar,17),'d',ge(#date_lunar,18)*le(#date_lunar,21),'e',ge(#date_lunar,22)*le(#date_lunar,26),'f','g')+'.png'">
+		<AlphaAnimation>
+				<Alpha a="153" time="0"/>
+				<Alpha a="255" time="1000"/>
+				<Alpha a="255" time="100000000000"/>
+		</AlphaAnimation>
+	</Image>
+	<Var name="star_alpha_a">
+				<VariableAnimation>
+				<AniFrame value="0" time="0"/>
+				<AniFrame value="0" time="7000"/>
+				<AniFrame value="25" time="8000"/>
+				<AniFrame value="170" time="9000"/>
+				<AniFrame value="255" time="10000"/>
+				<AniFrame value="0" time="12000"/>
+			</VariableAnimation>
+	</Var>
+	<Var name="star_alpha_time">
+				<VariableAnimation>
+				<AniFrame value="0" time="0"/>
+				<AniFrame value="7000" time="7000"/>
+				<AniFrame value="8000" time="8000"/>
+				<AniFrame value="8000" time="8000"/>
+				<AniFrame value="9000" time="9000"/>
+				<AniFrame value="10000" time="10000"/>
+				<AniFrame value="12000" time="12000"/>
+				<AniFrame value="20000" time="12001"/>
+				<AniFrame value="20000" time="100000000000"/>
+			</VariableAnimation>
+	</Var>
+	
+	<Var name="star_alpha_b">
+				<VariableAnimation>
+				<AniFrame value="0" time="0"/>
+				<AniFrame value="170" time="1000"/>
+				<AniFrame value="255" time="2000"/>
+				<AniFrame value="0" time="4000"/>
+			</VariableAnimation>
+	</Var>
+	<Image name="sunny_night_moon_star" x="50" y="24"  alpha="ifelse((#star_alpha_time-12000),#star_alpha_b,#star_alpha_a)" src="dynamic_weather/sunny_night_moon_star.png"/>
+	
+	<Image name="sunny_night_cloud_4" x="0" y="517" src="dynamic_weather/sunny_night_cloud_4.png">
+		<AlphaAnimation>
+				<Alpha a="255" time="0"/>
+				<Alpha a="0" time="8000"/>
+				<Alpha a="0" time="100000000000"/>
+		</AlphaAnimation>
+		<PositionAnimation>
+			<Position x="0" y="0" time="0"/>
+			<Position x="-100" y="0" time="8000"/>
+			<Position x="-100" y="0" time="100000000000"/>
+		</PositionAnimation>
+	</Image>
+	<Image name="sunny_night_cloud_3" x="483" y="341" src="dynamic_weather/sunny_night_cloud_3.png">
+		<AlphaAnimation>
+				<Alpha a="255" time="0"/>
+				<Alpha a="0" time="8000"/>
+				<Alpha a="0" time="100000000000"/>
+		</AlphaAnimation>
+		<PositionAnimation>
+			<Position x="0" y="0" time="0"/>
+			<Position x="-150" y="0" time="8000"/>
+			<Position x="-150" y="0" time="100000000000"/>
+		</PositionAnimation>
+	</Image>
+	
+	<Image name="sunny_night_cloud_2" x="271" y="287" src="dynamic_weather/sunny_night_cloud_2.png">
+		<AlphaAnimation>
+				<Alpha a="0" time="0"/>
+				<Alpha a="128" time="1500"/>
+				<Alpha a="0" time="8000"/>
+				<Alpha a="0" time="100000000000"/>
+		</AlphaAnimation>
+		<PositionAnimation>
+			<Position x="0" y="0" time="0"/>
+			<Position x="0" y="0" time="1000"/>
+			<Position x="-200" y="0" time="8000"/>
+			<Position x="-200" y="0" time="100000000000"/>
+		</PositionAnimation>		
+	</Image>
+	<Image name="sunny_night_cloud_1" x="271" y="287" src="dynamic_weather/sunny_night_cloud_1.png">
+		<AlphaAnimation>
+				<Alpha a="0" time="0"/>
+				<Alpha a="255" time="1500"/>
+				<Alpha a="0" time="4000"/>
+				<Alpha a="0" time="100000000000"/>
+		</AlphaAnimation>
+		<PositionAnimation>
+			<Position x="0" y="0" time="0"/>
+			<Position x="0" y="0" time="1000"/>
+			<Position x="-200" y="0" time="8000"/>
+			<Position x="-200" y="0" time="100000000000"/>
+		</PositionAnimation>	
+	</Image>
+	</Group>
+	
+	<Group name="ani_sunny_day" visibility="(eq(#weather_type, 16)+eq(#fade_weather,16))*ge(#hour24,6)*le(#hour24,17)" alpha="eq(#weather_type, 16) * #fade_in_anim + eq(#fade_weather,16) * #fade_out_anim)">
+
+	<Image name="ani_sunny_multi_color_cirle" src="dynamic_weather/multi_color_cirle.png" x="#screen_width-272" y="30">
+		<AlphaAnimation>
+				<Alpha a="0" time="0"/>
+				<Alpha a="178" time="2000"/>
+				<Alpha a="0" time="4000"/>
+				<Alpha a="255" time="6000"/>
+				<Alpha a="0" time="8000"/>
+				<Alpha a="178" time="10000"/>
+				<Alpha a="0" time="12000"/>
+		</AlphaAnimation>
+	</Image>
+	<Var name="halo1_scale">
+			<VariableAnimation>
+				<AniFrame value="1.0" time="0"/>
+				<AniFrame value="1.00" time="1500"/>
+				<AniFrame value="1.06" time="2000"/>
+				<AniFrame value="1.12" time="3000"/>
+				<AniFrame value="1.18" time="4000"/>
+				<AniFrame value="1.24" time="5000"/>
+				<AniFrame value="1.30" time="6000"/>
+				<AniFrame value="1.24" time="7000"/>
+				<AniFrame value="1.18" time="8000"/>
+				<AniFrame value="1.12" time="9000"/>
+				<AniFrame value="1.06" time="10000"/>
+				<AniFrame value="1.00" time="11000"/>
+				<AniFrame value="1.0" time="12000"/>
+			</VariableAnimation>
+	</Var>	
+	<Image name="ani_sunny_sun_halo" scale="#halo1_scale" src="dynamic_weather/sun_halo.png" x="-146" y="-116"  pivotX="866" pivotY="116">
+	<AlphaAnimation>
+				<Alpha a="0" time="0"/>
+				<Alpha a="0" time="1000"/>
+				<Alpha a="102" time="1500"/>
+				<Alpha a="128" time="4840"/>
+				<Alpha a="153" time="5500"/>
+				<Alpha a="230" time="5840"/>
+				<Alpha a="255" time="6000"/>
+				<Alpha a="230" time="6160"/>
+				<Alpha a="153" time="6500"/>
+				<Alpha a="128" time="7000"/>
+				<Alpha a="102" time="8300"/>
+				<Alpha a="0" time="11000"/>
+				<Alpha a="0" time="12000"/>
+		</AlphaAnimation>
+	<!--23,29,35,39,48,55-->
+	<RotationAnimation>
+		<Rotation angle="0" time="0"/>
+		<Rotation angle="-25" time="500"/>
+		<Rotation angle="-27" time="1500"/>
+		<Rotation angle="-29" time="2000"/>
+		<Rotation angle="-31" time="2500"/>
+		<Rotation angle="-33" time="3000"/>
+        <Rotation angle="-35" time="3500"/>
+        <Rotation angle="-37.5" time="4000"/>
+        <Rotation angle="-40" time="4500"/>
+       	<Rotation angle="-43.5" time="5000"/>
+        <Rotation angle="-47" time="5500"/>
+		<Rotation angle="-52" time="6000"/>
+		<Rotation angle="-55.5" time="6500"/>
+		<Rotation angle="-59" time="7000"/>
+		<Rotation angle="-62.5" time="7500"/>
+		<Rotation angle="-65" time="8000"/>
+		<Rotation angle="-67.5" time="8500"/>
+		<Rotation angle="-69.5" time="9000"/>
+		<Rotation angle="-71.5" time="9500"/>
+		<Rotation angle="-73.5" time="10000"/>
+		<Rotation angle="-75.5" time="10500"/>
+		<Rotation angle="-77.5" time="11000"/>
+		<Rotation angle="-79.5" time="11500"/>
+		<Rotation angle="-81.5" time="12000"/>
+      </RotationAnimation>
+	</Image>
+
+	<Image name="ani_sunny_second_layer"  src="dynamic_weather/sun_second_layer.png" x="#screen_width-324" y="0">
+		<AlphaAnimation>
+				<Alpha a="120" time="0"/>
+				<Alpha a="255" time="2000"/>
+				<Alpha a="120" time="4000"/>
+				<Alpha a="255" time="6000"/>
+				<Alpha a="120" time="8000"/>
+				<Alpha a="255" time="10000"/>
+				<Alpha a="120" time="12000"/>
+		</AlphaAnimation>
+	</Image>
+
+	<Image name="ani_sunny_first_layer"  src="dynamic_weather/sun_first_layer.png" x="#screen_width-324" y="0">
+		<AlphaAnimation>
+				<Alpha a="144" time="0"/>
+				<Alpha a="255" time="2000"/>
+				<Alpha a="144" time="4000"/>
+				<Alpha a="255" time="6000"/>
+				<Alpha a="144" time="8000"/>
+				<Alpha a="255" time="10000"/>
+				<Alpha a="144" time="12000"/>
+		</AlphaAnimation>
+	</Image>
+	</Group>
+	<!--partly cloudy多云 白天-->
+	<!--<Image name="bg" x="0" y="0" w="#view_width" h="#view_height" src="dynamic_weather/bg_sunny.png"/>-->
+	<Group name="ani_partly_cloudy_day" visibility="(eq(#weather_type, 15)+eq(#fade_weather,15))*ge(#hour24,6)*le(#hour24,17)" alpha="eq(#weather_type, 15) * #fade_in_anim + eq(#fade_weather,15) * #fade_out_anim)">
+		
+		<Image name="light" alpha="165" w="2000" h="2000" x="-1000" y="-1500" src="dynamic_weather/thunder_halo_3.png"/>
+		<Group delay="-50000">	
+      <Image name="p_cloudy_1" alpha="100" w="1780" h="400" x="800" y="0" src="dynamic_weather/p_cloud1.png">
+				<PositionAnimation delay="-100000">
+					<Position x="-2580" y="0" time="258000"/>
+				</PositionAnimation>
+			</Image>
+    	<Image name="p_cloudy_3" w="2000" h="500" x="800" y="-100" src="dynamic_weather/p_cloud3.png">
+				<PositionAnimation>
+					<Position x="-2800" y="0" time="60000"/>
+					<Position x="-2800" y="0" time="96000"/>
+				</PositionAnimation>
+			</Image>
+      <Image name="p_cloudy_3" w="1500" h="375" x="800" y="0" src="dynamic_weather/p_cloud3.png">
+				<PositionAnimation>
+					<Position x="-1200" y="0" time="0"/>
+					<Position x="-2400" y="0" time="30000"/>
+					<Position x="-2400" y="0" time="96000"/>
+				</PositionAnimation>
+			</Image>
+      <Image name="p_cloudy_3" w="1500" h="375" x="800" y="0" src="dynamic_weather/p_cloud3.png">
+				<PositionAnimation>
+					<Position x="0" y="0" time="66000"/>
+					<Position x="-1200" y="0" time="96000"/>
+				</PositionAnimation>
+			</Image>
+      <Image name="p_cloudy_4" alpha="100" w="1600" h="800" x="800" y="-100" src="dynamic_weather/p_cloud2.png">
+				<PositionAnimation>
+					<Position x="-2400" y="0" time="72000"/>
+					<Position x="-2400" y="0" time="96000"/>
+				</PositionAnimation>
+			</Image>
+      <Image name="p_cloudy_5" alpha="90" w="1200" h="600" x="800" y="50" src="dynamic_weather/p_cloud2.png">
+				<PositionAnimation>
+					<Position x="0" y="0" time="60000"/>
+					<Position x="-1000" y="0" time="96000"/>
+				</PositionAnimation>
+			</Image>
+      <Image name="p_cloudy_6" alpha="90" w="1200" h="600" x="800" y="50" src="dynamic_weather/p_cloud2.png">
+				<PositionAnimation>
+					<Position x="-1000" y="0" time="0"/>
+					<Position x="-2000" y="0" time="36000"/>
+					<Position x="-2000" y="0" time="96000"/>
+				</PositionAnimation>
+			</Image>
+      <Image name="p_cloudy_7"  alpha="140" w="1200" h="320" x="800" y="320" src="dynamic_weather/p_cloud4.png">
+				<PositionAnimation>
+					<Position x="-2000" y="0" time="96000"/>
+				</PositionAnimation>
+			</Image>
+    </Group>
+	</Group>
+	<!--多云 晚上-->
+	<Group name="ani_partly_cloudy_night" visibility="(eq(#weather_type, 15)+eq(#fade_weather,15))*(ge(#hour24,18)+le(#hour24,5))" alpha="eq(#weather_type, 15) * #fade_in_anim + eq(#fade_weather,15) * #fade_out_anim)">
+		<Image x="324" y="247" src="dynamic_weather/ani_partly_cloudy_night_moon.png">
+			<AlphaAnimation>
+				<Alpha a="255" time="0"/>
+				<Alpha a="150" time="7000"/>
+				<Alpha a="0" time="8000"/>
+				<Alpha a="0" time="100000000000"/>
+			</AlphaAnimation>
+		</Image>
+		<Image x="90" y="197" src="dynamic_weather/ani_partly_cloudy_night_cloudy1.png">
+			<AlphaAnimation>
+				<Alpha a="255" time="0"/>
+				<Alpha a="150" time="8000"/>
+				<Alpha a="0" time="9000"/>
+				<Alpha a="0" time="9001"/>
+				<Alpha a="255" time="10001"/>
+			</AlphaAnimation>
+			<PositionAnimation>
+			   <Position x="0" y="0" time="0"/>
+			   <Position x="-110" y="0" time="9000"/>
+			   <Position x="0" y="0" time="9001"/>
+			   <Position x="0" y="0" time="10001"/>
+			</PositionAnimation>
+		</Image>
+		<Image x="-135" y="528" src="dynamic_weather/ani_partly_cloudy_night_cloudy2.png">
+			<AlphaAnimation>
+				<Alpha a="255" time="0"/>
+				<Alpha a="150" time="8000"/>
+				<Alpha a="150" time="56000"/>
+				<Alpha a="0" time="56001"/>
+				<Alpha a="255" time="59001"/>
+			</AlphaAnimation>
+			<PositionAnimation>
+			   <Position x="0" y="0" time="0"/>
+			   <Position x="-959" y="0" time="56000"/>
+			   <Position x="0" y="0" time="56001"/>
+			   <Position x="0" y="0" time="57001"/>
+			</PositionAnimation>			
+		</Image>
+		<Image x="90" y="688" src="dynamic_weather/ani_partly_cloudy_night_cloudy3.png">
+			<AlphaAnimation>
+				<Alpha a="255" time="0"/>
+				<Alpha a="150" time="8000"/>
+				<Alpha a="150" time="25999"/>
+				<Alpha a="0" time="26000"/>
+				<Alpha a="255" time="29000"/>
+			</AlphaAnimation>
+			<PositionAnimation>
+			   <Position x="0" y="0" time="0"/>
+			   <Position x="-697" y="0" time="25999"/>
+			   <Position x="0" y="0" time="26000"/>
+			   <Position x="0" y="0" time="27000"/>
+			</PositionAnimation>				
+		</Image>
+		<!--717*185-->
+		<Image x="202" y="671" src="dynamic_weather/ani_partly_cloudy_night_cloudy4.png">
+			<AlphaAnimation>
+				<Alpha a="255" time="0"/>
+				<Alpha a="255" time="8000"/>
+				<Alpha a="255" time="30999"/>
+				<Alpha a="0" time="31000"/>
+				<Alpha a="255" time="34000"/>
+			</AlphaAnimation>
+			<PositionAnimation>
+			   <Position x="0" y="0" time="0"/>
+			   <Position x="-919" y="0" time="30999"/>
+			   <Position x="0" y="0" time="31000"/>
+			   <Position x="0" y="0" time="32000"/>
+			</PositionAnimation>			
+		</Image>
+	</Group>
+	
+	<!--少云 白天 cloudy <Image name="bg" x="0" y="0" w="#view_width" h="#view_height" src="dynamic_weather/bg_sunny.png"/>-->
+	<Group name="ani_cloudy_day" visibility="(eq(#weather_type, 14)+eq(#fade_weather,14))*ge(#hour24,6)*le(#hour24,17)" alpha="ifelse(eq(#weather_type, 14),#fade_in_anim,#fade_out_anim)">
+		
+		<Image name="light" alpha="165" w="2000" h="2000" x="-1000" y="-1500" src="dynamic_weather/thunder_halo_3.png"/>
+		<Group>	
+    	<Image name="p_cloudy_1" w="1160" h="450" x="800" y="130" src="dynamic_weather/cloud1.png">
+				<PositionAnimation delay="-520000">
+					<Position x="-1960" y="0" time="1000000"/>
+				</PositionAnimation>
+			</Image>
+      <Image name="p_cloudy_2" w="850" h="260" x="800" y="270" src="dynamic_weather/cloud2.png">
+				<PositionAnimation delay="-200000">
+					<Position x="-1650" y="0" time="500000"/>
+				</PositionAnimation>
+			</Image>
+      <Image name="p_cloudy_3" w="1760" h="640" x="800" y="400" src="dynamic_weather/cloud3.png">
+				<PositionAnimation delay="-50000">
+					<Position x="-2560" y="0" time="140000"/>
+				</PositionAnimation>
+			</Image>
+      <Image name="p_cloudy_4" w="720" h="180" x="800" y="440" src="dynamic_weather/cloud4.png">
+				<PositionAnimation>
+					<Position x="-1520" y="0" time="120000"/>
+				</PositionAnimation>
+			</Image>
+      <Image name="p_cloudy_5" w="700" h="240" x="800" y="520" src="dynamic_weather/cloud5.png">
+				<PositionAnimation delay="-50000">
+					<Position x="-1500" y="0" time="100000"/>
+				</PositionAnimation>
+			</Image>
+      <Image name="p_cloudy_6" w="1000" h="240" x="800" y="600" src="dynamic_weather/cloud6.png">
+				<PositionAnimation>
+					<Position x="-1800" y="0" time="90000"/>
+				</PositionAnimation>
+			</Image>
+    </Group>
+	</Group>
+	<!--少云 晚上-->
+	<Group name="ani_cloudy_night" visibility="(eq(#weather_type, 14)+eq(#fade_weather,14))*(ge(#hour24,18)+le(#hour24,5))" alpha="ifelse(eq(#weather_type, 14),#fade_in_anim,#fade_out_anim)">
+		<Image name="sunny_night_moon_1" x="438" y="40" srcExp="'dynamic_weather/sunny_night_moon_'+ifelse(ge(#date_lunar,1)*le(#date_lunar,4),'a',ge(#date_lunar,5)*le(#date_lunar,9),'b',ge(#date_lunar,10)*le(#date_lunar,14),'c',ge(#date_lunar,15)*le(#date_lunar,17),'d',ge(#date_lunar,18)*le(#date_lunar,21),'e',ge(#date_lunar,22)*le(#date_lunar,26),'f','g')+'.png'">
+		<AlphaAnimation>
+				<Alpha a="153" time="0"/>
+				<Alpha a="255" time="1000"/>
+				<Alpha a="255" time="100000000000"/>
+		</AlphaAnimation>
+	</Image>
+		<Image x="103" y="189" src="dynamic_weather/ani_cloudy_night_cloudy1.png">
+			<AlphaAnimation>
+				<Alpha a="255" time="0"/>
+				<Alpha a="255" time="50000"/>
+				<Alpha a="0" time="50001"/>
+				<Alpha a="255" time="51001"/>
+			</AlphaAnimation>
+			<PositionAnimation>
+			   <Position x="0" y="0" time="0"/>
+			   <Position x="-1251" y="0" time="50000"/>
+			   <Position x="0" y="0" time="50001"/>
+			   <Position x="0" y="0" time="50001"/>
+			</PositionAnimation>		
+		</Image>
+		
+		<Image x="-252" y="452" src="dynamic_weather/ani_cloudy_night_cloudy2.png">
+			<AlphaAnimation>
+				<Alpha a="255" time="0"/>
+				<Alpha a="255" time="34000"/>
+				<Alpha a="0" time="34001"/>
+				<Alpha a="255" time="35001"/>
+			</AlphaAnimation>
+			<PositionAnimation>
+			   <Position x="0" y="0" time="0"/>
+			   <Position x="-1407" y="0" time="34000"/>
+			   <Position x="0" y="0" time="34001"/>
+			   <Position x="0" y="0" time="35001"/>
+			</PositionAnimation>			
+		</Image>
+		<Image x="-188" y="404" src="dynamic_weather/ani_cloudy_night_cloudy3.png">
+			<AlphaAnimation>
+				<Alpha a="255" time="0"/>
+				<Alpha a="255" time="35000"/>
+				<Alpha a="0" time="35001"/>
+				<Alpha a="255" time="36001"/>
+			</AlphaAnimation>
+			<PositionAnimation>
+			   <Position x="0" y="0" time="0"/>
+			   <Position x="-1591" y="0" time="35000"/>
+			   <Position x="0" y="0" time="35001"/>
+			   <Position x="0" y="0" time="36001"/>
+			</PositionAnimation>			
+		</Image>
+		<Image x="138" y="639" src="dynamic_weather/ani_cloudy_night_cloudy4.png"/>		
+		
+	</Group>
+	
+	<!--fog <Image name="bg" x="0" y="0" w="#view_width" h="#view_height" src="dynamic_weather/bg_fog.png"/>-->
+	<Group name="ani_fog" visibility="eq(#weather_type, 12)+eq(#fade_weather,12)" alpha="ifelse(eq(#weather_type, 12),#fade_in_anim,#fade_out_anim)">
+		
+		<Image name="fog_sun" x="120" y="-50" w="728" h="728" src="dynamic_weather/fog_sun.png"/>
+		<Image name="fog1" alpha="125" x="1000" y="-240" w="3000" h="1600" src="dynamic_weather/fog1.png">
+			<PositionAnimation delay="-80000">
+				<Position x="0" y="0" time="0"/>
+				<Position x="-4000" y="0" time="160000"/>
+			</PositionAnimation>
+		</Image>
+		<Image name="fog2" alpha="125" x="1000" y="-240" w="3000" h="1600" src="dynamic_weather/fog2.png">
+			<PositionAnimation delay="-60000">
+				<Position x="0" y="0" time="0"/>
+				<Position x="-4000" y="0" time="120000"/>
+			</PositionAnimation>
+		</Image>
+		<Image name="fog3" x="1000" y="-240" w="3000" h="1600" src="dynamic_weather/fog3.png">
+			<PositionAnimation delay="-40000">
+				<Position x="0" y="0" time="0"/>
+				<Position x="-4000" y="0" time="80000"/>
+			</PositionAnimation>
+		</Image>
+		<Image name="fog1" x="1000" y="-240" w="3000" h="1600" src="dynamic_weather/fog1.png">
+			<PositionAnimation>
+				<Position x="0" y="0" time="0"/>
+				<Position x="-4000" y="0" time="160000"/>
+			</PositionAnimation>
+		</Image>
+		<Image name="fog2" x="1000" y="-240" w="3000" h="1600" src="dynamic_weather/fog2.png">
+			<PositionAnimation>
+				<Position x="0" y="0" time="0"/>
+				<Position x="-4000" y="0" time="120000"/>
+			</PositionAnimation>
+		</Image>
+		<Image name="fog3" alpha="125" x="1000" y="-240" w="3000" h="1600" src="dynamic_weather/fog3.png">
+			<PositionAnimation>
+				<Position x="0" y="0" time="0"/>
+				<Position x="-4000" y="0" time="80000"/>
+			</PositionAnimation>
+		</Image>
+	</Group>
+	<!--阴天白天-->
+	<Group name="ani_overcast_day" visibility="(eq(#weather_type, 11)+eq(#fade_weather,11))*ge(#hour24,6)*le(#hour24,17)" alpha="ifelse(eq(#weather_type, 11),#fade_in_anim,#fade_out_anim)">
+		<Image name="bg" w="640" h="640" x="160" y="-500" src="dynamic_weather/thunder_halo_3.png"/>
+		<Image name="bg" w="360" h="600" x="220" y="180" src="dynamic_weather/overcast_halo1.png">
+			<PositionAnimation>
+				<Position x="0" y="0" time="0"/>
+				<Position x="40" y="0" time="8000"/>
+				<Position x="50" y="0" time="16000"/>
+				<Position x="0" y="0" time="20000"/>
+				<Position x="0" y="0" time="24000"/>
+			</PositionAnimation>
+			<AlphaAnimation>
+				<Alpha a="180" time="0"/>
+				<Alpha a="255" time="8000"/>
+				<Alpha a="255" time="16000"/>
+				<Alpha a="180" time="24000"/>
+			</AlphaAnimation>
+		</Image>
+		<Image name="bg" w="400" h="640" x="280" y="100" src="dynamic_weather/overcast_halo2.png">
+			<PositionAnimation>
+				<Position x="0" y="0" time="0"/>
+				<Position x="-20" y="0" time="6000"/>
+				<Position x="-30" y="0" time="8000"/>
+				<Position x="0" y="0" time="12000"/>
+				<Position x="0" y="0" time="16000"/>
+			</PositionAnimation>
+			<AlphaAnimation>
+				<Alpha a="100" time="0"/>
+				<Alpha a="165" time="6000"/>
+				<Alpha a="145" time="12000"/>
+				<Alpha a="100" time="16000"/>
+			</AlphaAnimation>
+		</Image>
+		<Image name="bg" x="0" y="0" w="#view_width" h="640" src="dynamic_weather/overcast_overlay1.png"/>
+		<Group delay="-50000">	
+      <Image name="overcast_1" w="2000" h="696" x="800" y="-220" src="dynamic_weather/overcast1.png">
+				<PositionAnimation delay="-100000">
+					<Position x="-2800" y="0" time="280000"/>
+				</PositionAnimation>
+			</Image>
+      <Image name="overcast_2" w="600" h="200" x="800" y="860" src="dynamic_weather/overcast2.png">
+				<PositionAnimation>
+					<Position x="-1400" y="0" time="28000"/>
+				</PositionAnimation>
+			</Image>
+      <Image name="overcast_4" alpha="180" w="1200" h="300" x="800" y="700" src="dynamic_weather/overcast4.png">
+				<PositionAnimation delay="-2000">
+					<Position x="-2000" y="0" time="30000"/>
+				</PositionAnimation>
+			</Image>
+      <Image name="overcast_3" alpha="200" w="1110" h="670" x="800" y="600" src="dynamic_weather/overcast2.png">
+				<PositionAnimation delay="-5000">
+					<Position x="-1910" y="0" time="20000"/>
+				</PositionAnimation>
+			</Image>
+      <Image name="overcast_4" alpha="200" w="800" h="210" x="800" y="520" src="dynamic_weather/overcast4.png">
+				<PositionAnimation delay="-8000">
+					<Position x="-1600" y="0" time="24000"/>
+				</PositionAnimation>
+			</Image>
+    </Group>
+  	<Image name="overcast_overlay_bottom" x="0" y="600" w="#view_width" h="680" src="dynamic_weather/overcast_overlay_bottom.png"/>
+	</Group>
+	
+	<!--阴天晚上-->
+	<Group name="ani_overcast_night"  visibility="(eq(#weather_type, 11)+eq(#fade_weather,11))*(ge(#hour24,18)+le(#hour24,5))" alpha="ifelse(eq(#weather_type, 11),#fade_in_anim,#fade_out_anim)">
+	
+	<Image name="ani_overcast_night_clundy_1" x="-715" y="60" src="dynamic_weather/ani_overcast_night_clundy_1.png">
+		<AlphaAnimation>
+				<Alpha a="255" time="0"/>
+				<Alpha a="255" time="95000"/>
+				<Alpha a="0" time="95001"/>
+				<Alpha a="255" time="98001"/>
+		</AlphaAnimation>
+		<PositionAnimation >
+			<Position x="0" y="0" time="0"/>
+			<Position x="-1333" y="0" time="95000"/>
+			<Position x="0" y="0" time="95001"/>
+			<Position x="0" y="0" time="98001"/>
+		</PositionAnimation>
+	</Image>
+	
+	<Image name="ani_overcast_night_clundy_2" x="-535" y="-72" src="dynamic_weather/ani_overcast_night_clundy_2.png">
+		<AlphaAnimation>
+				<Alpha a="255" time="0"/>
+				<Alpha a="255" time="143000"/>
+				<Alpha a="0" time="143001"/>
+				<Alpha a="255" time="146001"/>
+		</AlphaAnimation>
+		<PositionAnimation >
+			<Position x="0" y="0" time="0"/>
+			<Position x="-1197" y="0" time="143000"/>
+			<Position x="0" y="0" time="143001"/>
+			<Position x="0" y="0" time="146001"/>
+		</PositionAnimation>
+	</Image>
+	
+	<Image name="ani_overcast_night_clundy_3" x="98" y="247" src="dynamic_weather/ani_overcast_night_clundy_3.png">
+		<AlphaAnimation>
+				<Alpha a="255" time="0"/>
+				<Alpha a="255" time="71000"/>
+				<Alpha a="0" time="71001"/>
+				<Alpha a="255" time="74001"/>
+		</AlphaAnimation>
+		<PositionAnimation >
+			<Position x="0" y="0" time="0"/>
+			<Position x="-922" y="0" time="71000"/>
+			<Position x="0" y="0" time="71001"/>
+			<Position x="0" y="0" time="74001"/>
+		</PositionAnimation>	
+	</Image>
+	
+	<Image name="ani_overcast_night_clundy_4" x="293" y="464" src="dynamic_weather/ani_overcast_night_clundy_4.png">
+		<AlphaAnimation>
+				<Alpha a="255" time="0"/>
+				<Alpha a="255" time="135000"/>
+				<Alpha a="0" time="135001"/>
+				<Alpha a="255" time="138001"/>
+		</AlphaAnimation>
+		<PositionAnimation >
+			<Position x="0" y="0" time="0"/>
+			<Position x="-758" y="0" time="135000"/>
+			<Position x="0" y="0" time="135001"/>
+			<Position x="0" y="0" time="138001"/>
+		</PositionAnimation>		
+	</Image>
+	
+	<Image name="ani_overcast_night_clundy_5" x="5" y="550" src="dynamic_weather/ani_overcast_night_clundy_5.png">
+		<AlphaAnimation>
+				<Alpha a="255" time="0"/>
+				<Alpha a="255" time="42000"/>
+				<Alpha a="0" time="42001"/>
+				<Alpha a="255" time="45001"/>
+		</AlphaAnimation>
+		<PositionAnimation >
+			<Position x="0" y="0" time="0"/>
+			<Position x="-470" y="0" time="42000"/>
+			<Position x="0" y="0" time="42001"/>
+			<Position x="0" y="0" time="45001"/>
+		</PositionAnimation>		
+	</Image>
+	<Image name="ani_overcast_night_clundy_6" x="0" y="301" src="dynamic_weather/ani_overcast_night_clundy_6.png"/>
+	</Group>
+	
+	
+	<!--shower <Image name="bg" x="0" y="0" w="#view_width" h="#view_height" src="dynamic_weather/bg_rainlight.png"/>-->
+	<Group name="ani_rainshowers" visibility="eq(#weather_type, 10)+eq(#fade_weather,10)" alpha="ifelse(eq(#weather_type, 10),#fade_in_anim,#fade_out_anim)">
+		
+    <Group name="ani_rainheavy_rain_1" x="40" rotation="7">
+			<AlphaAnimation>
+				<Alpha a="255" time="5000"/>
+				<Alpha a="0" time="6000"/>
+				<Alpha a="0" time="12000"/>
+				<Alpha a="255" time="14000"/>
+			</AlphaAnimation>
+			<Image x="20" y="-1280" src="dynamic_weather/rain_heavy_1.png">
+				<PositionAnimation>
+					<Position x="0" y="2560" time="1000"/>
+					<Position x="0" y="2560" time="2000"/>
+				</PositionAnimation>
+			</Image>
+			<Image x="20" y="-1280" src="dynamic_weather/rain_heavy_1.png">
+				<PositionAnimation>
+					<Position x="0" y="0" time="500"/>
+					<Position x="0" y="2560" time="1500"/>
+					<Position x="0" y="2560" time="2000"/>
+				</PositionAnimation>
+			</Image>
+			<Image x="20" y="-1280" src="dynamic_weather/rain_heavy_1.png">
+				<PositionAnimation>
+					<Position x="0" y="0" time="1000"/>
+					<Position x="0" y="2560" time="2000"/>
+				</PositionAnimation>
+			</Image>
+			<Image x="20" y="-1280" src="dynamic_weather/rain_heavy_1.png">
+				<PositionAnimation>
+					<Position x="0" y="0" time="1500"/>
+					<Position x="0" y="1280" time="2000"/>
+				</PositionAnimation>
+			</Image>
+			<Image x="20" y="-1280" src="dynamic_weather/rain_heavy_1.png">
+				<PositionAnimation>
+					<Position x="0" y="1280" time="0"/>
+					<Position x="0" y="2560" time="500"/>
+					<Position x="0" y="2560" time="2000"/>
+				</PositionAnimation>
+			</Image>
+		</Group>
+   	<Group name="ani_rainheavy_rain_2" x="40" rotation="7">
+			<AlphaAnimation>
+				<Alpha a="255" time="2000"/>
+				<Alpha a="0" time="3000"/>
+				<Alpha a="0" time="7000"/>
+				<Alpha a="255" time="12000"/>
+			</AlphaAnimation>
+			<Image w="720" h="1280" x="20" y="-1280" src="dynamic_weather/rain_heavy_2.png">
+				<PositionAnimation>
+					<Position x="0" y="2560" time="1500"/>
+					<Position x="0" y="2560" time="2000"/>
+				</PositionAnimation>
+			</Image>
+			<Image w="720" h="1280" x="20" y="-1280" src="dynamic_weather/rain_heavy_2.png">
+				<PositionAnimation>
+					<Position x="0" y="0" time="1000"/>
+					<Position x="0" y="1706" time="2000"/>
+				</PositionAnimation>
+			</Image>
+			<Image w="720" h="1280" x="20" y="-1280" src="dynamic_weather/rain_heavy_2.png">
+				<PositionAnimation>
+					<Position x="0" y="1706" time="0"/>
+					<Position x="0" y="2560" time="500"/>
+					<Position x="0" y="2560" time="2000"/>
+				</PositionAnimation>
+			</Image>
+			<Image w="720" h="1280" x="20" y="-1280" src="dynamic_weather/rain_heavy_2.png">
+				<PositionAnimation>
+					<Position x="0" y="1280" time="0"/>
+					<Position x="0" y="2560" time="1000"/>
+					<Position x="0" y="2560" time="3000"/>
+				</PositionAnimation>
+			</Image>
+		</Group>
+    <Group name="ani_rainheavy_rain_3" x="40" rotation="7">
+			<AlphaAnimation>
+				<Alpha a="255" time="6000"/>
+				<Alpha a="0" time="7000"/>
+				<Alpha a="0" time="10000"/>
+				<Alpha a="255" time="11000"/>
+			</AlphaAnimation>
+			<Image w="720" h="1280" x="20" y="-1280" src="dynamic_weather/rain_light_3.png">
+				<PositionAnimation>
+					<Position x="0" y="2560" time="3000"/>
+				</PositionAnimation>
+			</Image>
+			<Image w="720" h="1280" x="20" y="-1280" src="dynamic_weather/rain_light_3.png">
+				<PositionAnimation>
+					<Position x="0" y="0" time="1500"/>
+					<Position x="0" y="1280" time="3000"/>
+				</PositionAnimation>
+			</Image>
+			<Image w="720" h="1280" x="20" y="-1280" src="dynamic_weather/rain_light_3.png">
+				<PositionAnimation>
+					<Position x="0" y="1280" time="0"/>
+					<Position x="0" y="2560" time="1500"/>
+					<Position x="0" y="2560" time="3000"/>
+				</PositionAnimation>
+			</Image>
+		</Group>
+		<Image name="snow_light_overlay" x="0" y="0" w="#view_width" h="#view_height" src="dynamic_weather/rain_light_overlay.png"/>
+		<Image name="snow_light_overlay_bottom" x="0" y="600" w="#view_width" h="680" src="dynamic_weather/rain_light_overlay_bottom.png"/>
+	</Group>
+	
+	<!--snow light <Image name="bg" x="0" y="0" w="#view_width" h="#view_height" src="dynamic_weather/bg_snowlight.png"/>-->
+	<Group name="ani_snowlight" visibility="eq(#weather_type, 9)+eq(#fade_weather,9)" alpha="ifelse(eq(#weather_type, 9),#fade_in_anim,#fade_out_anim)">
+		
+    <Group name="ani_snowlight_snow" x="20" rotation="5">
+			<Image alpha="125" w="720" h="1280" x="20" y="-1280" src="dynamic_weather/snow_light_2.png">
+				<PositionAnimation>
+					<Position x="0" y="2560" time="16000"/>
+					<Position x="0" y="2560" time="24000"/>
+				</PositionAnimation>
+			</Image>
+			<Image alpha="125" w="720" h="1280" x="20" y="-1280" src="dynamic_weather/snow_light_2.png">
+				<PositionAnimation>
+					<Position x="0" y="0" time="8000"/>
+					<Position x="0" y="2560" time="24000"/>
+				</PositionAnimation>
+			</Image>
+			<Image alpha="125" w="720" h="1280" x="20" y="-1280" src="dynamic_weather/snow_light_2.png">
+				<PositionAnimation>
+					<Position x="0" y="1280" time="0"/>
+					<Position x="0" y="2560" time="8000"/>
+					<Position x="0" y="2560" time="24000"/>
+				</PositionAnimation>
+			</Image>
+			<Image alpha="125" w="720" h="1280" x="20" y="-1280" src="dynamic_weather/snow_light_2.png">
+				<PositionAnimation>
+					<Position x="0" y="0" time="16000"/>
+					<Position x="0" y="1280" time="24000"/>
+				</PositionAnimation>
+			</Image>
+		</Group>
+		<Group name="ani_snowlight_snow_2" x="20" rotation="5">
+			<Image w="720" h="1280" x="20" y="-1280" src="dynamic_weather/snow_light_1.png">
+				<PositionAnimation>
+					<Position x="0" y="2560" time="12000"/>
+					<Position x="0" y="2560" time="24000"/>
+				</PositionAnimation>
+			</Image>
+			<Image w="720" h="1280" x="20" y="-1280" src="dynamic_weather/snow_light_1.png">
+				<PositionAnimation>
+					<Position x="0" y="0" time="6000"/>
+					<Position x="0" y="2560" time="18000"/>
+					<Position x="0" y="2560" time="24000"/>
+				</PositionAnimation>
+			</Image>
+			<Image w="720" h="1280" x="20" y="-1280" src="dynamic_weather/snow_light_1.png">
+				<PositionAnimation>
+					<Position x="0" y="0" time="12000"/>
+					<Position x="0" y="2560" time="24000"/>
+				</PositionAnimation>
+			</Image>
+			<Image w="720" h="1280" x="20" y="-1280" src="dynamic_weather/snow_light_1.png">
+				<PositionAnimation>
+					<Position x="0" y="0" time="18000"/>
+					<Position x="0" y="1280" time="24000"/>
+				</PositionAnimation>
+			</Image>
+			<Image w="720" h="1280" x="20" y="-1280" src="dynamic_weather/snow_light_1.png">
+				<PositionAnimation>
+					<Position x="0" y="1280" time="0"/>
+					<Position x="0" y="2560" time="6000"/>
+					<Position x="0" y="2560" time="24000"/>
+				</PositionAnimation>
+			</Image>
+		</Group>
+		<Group name="ani_snowlight_snow_3" x="20" rotation="6">
+			<Image x="20" y="-1280" w="720" h="1280" src="dynamic_weather/snow_light_3.png">
+				<PositionAnimation>
+					<Position x="0" y="2560" time="10000"/>
+					<Position x="0" y="2560" time="24000"/>
+				</PositionAnimation>
+			</Image>
+			<Image x="20" y="-1280" w="720" h="1280" src="dynamic_weather/snow_light_3.png">
+				<PositionAnimation>
+					<Position x="0" y="0" time="6000"/>
+					<Position x="0" y="2560" time="16000"/>
+					<Position x="0" y="2560" time="24000"/>
+				</PositionAnimation>
+			</Image>
+			<Image x="20" y="-1280" w="720" h="1280" src="dynamic_weather/snow_light_3.png">
+				<PositionAnimation>
+					<Position x="0" y="0" time="12000"/>
+					<Position x="0" y="2560" time="22000"/>
+					<Position x="0" y="2560" time="24000"/>
+				</PositionAnimation>
+			</Image>
+			<Image x="20" y="-1280" w="720" h="1280" src="dynamic_weather/snow_light_3.png">
+				<PositionAnimation>
+					<Position x="0" y="0" time="18000"/>
+					<Position x="0" y="1536" time="24000"/>
+				</PositionAnimation>
+			</Image>
+			<Image x="20" y="-1280" w="720" h="1280" src="dynamic_weather/snow_light_3.png">
+				<PositionAnimation>
+					<Position x="0" y="1536" time="0"/>
+					<Position x="0" y="2560" time="4000"/>
+					<Position x="0" y="2560" time="24000"/>
+				</PositionAnimation>
+			</Image>
+		</Group>
+		
+		<Group name="snow_light_overlay_group" visibility="ge(#hour24,6)*le(#hour24,17)">
+			<Image name="snow_light_overlay" x="0" y="0" w="#view_width" h="909"  src="dynamic_weather/snow_light_overlay_2.png"/>
+			<Image name="snow_light_overlay" x="0" y="0" w="#view_width" h="#view_height" src="dynamic_weather/snow_light_overlay.png"/>
+			<Image name="snow_light_overlay_bottom" x="0" y="600" w="#view_width" h="680"  src="dynamic_weather/snow_light_overlay_bottom.png"/>
+	   </Group>
+	
+	</Group>
+	
+	<!--小雨 rain light <Image name="bg" x="0" y="0" w="#view_width" h="#view_height" src="dynamic_weather/bg_rainlight.png"/>-->
+	<Group name="ani_rainlight" visibility="eq(#weather_type, 8)+eq(#fade_weather,8)" alpha="ifelse(eq(#weather_type, 8),#fade_in_anim,#fade_out_anim)">
+		
+    <Group name="ani_rainlight_rain_1" x="20" rotation="5">
+		<Image w="720" h="1280" x="20" y="-1280" src="dynamic_weather/rain_light_1.png">
+			<PositionAnimation>
+				<Position x="0" y="2560" time="1500"/>
+				<Position x="0" y="2560" time="3000"/>
+			</PositionAnimation>
+		</Image>
+		<Image w="720" h="1280" x="20" y="-1280" src="dynamic_weather/rain_light_1.png">
+			<PositionAnimation>
+				<Position x="0" y="0" time="750"/>
+				<Position x="0" y="2560" time="2250"/>
+				<Position x="0" y="2560" time="3000"/>
+			</PositionAnimation>
+		</Image>
+		<Image w="720" h="1280" x="20" y="-1280" src="dynamic_weather/rain_light_1.png">
+			<PositionAnimation>
+				<Position x="0" y="0" time="1500"/>
+				<Position x="0" y="2560" time="3000"/>
+			</PositionAnimation>
+		</Image>
+		<Image w="720" h="1280" x="20" y="-1280" src="dynamic_weather/rain_light_1.png">
+			<PositionAnimation>
+				<Position x="0" y="0" time="2250"/>
+				<Position x="0" y="1280" time="3000"/>
+			</PositionAnimation>
+		</Image>
+		<Image w="720" h="1280" x="20" y="-1280" src="dynamic_weather/rain_light_1.png">
+			<PositionAnimation>
+				<Position x="0" y="1280" time="0"/>
+				<Position x="0" y="2560" time="750"/>
+				<Position x="0" y="2560" time="3000"/>
+			</PositionAnimation>
+		</Image>
+		</Group>
+    <Group name="ani_rainlight_rain_2" x="20" rotation="5">
+			<Image w="720" h="1280" x="20" y="-1280" src="dynamic_weather/rain_light_2.png">
+				<PositionAnimation>
+					<Position x="0" y="2560" time="2000"/>
+					<Position x="0" y="2560" time="3000"/>
+				</PositionAnimation>
+			</Image>
+			<Image w="720" h="1280" x="20" y="-1280" src="dynamic_weather/rain_light_2.png">
+				<PositionAnimation>
+					<Position x="0" y="0" time="1000"/>
+					<Position x="0" y="2560" time="3000"/>
+				</PositionAnimation>
+			</Image>
+			<Image w="720" h="1280" x="20" y="-1280" src="dynamic_weather/rain_light_2.png">
+				<PositionAnimation>
+					<Position x="0" y="0" time="2000"/>
+					<Position x="0" y="1280" time="3000"/>
+				</PositionAnimation>
+			</Image>
+			<Image w="720" h="1280" x="20" y="-1280" src="dynamic_weather/rain_light_2.png">
+				<PositionAnimation>
+					<Position x="0" y="1280" time="0"/>
+					<Position x="0" y="2560" time="1000"/>
+					<Position x="0" y="2560" time="3000"/>
+				</PositionAnimation>
+			</Image>
+		</Group>
+    <Group name="ani_rainlight_rain_3" x="20" rotation="5">
+			<Image w="720" h="1280" x="20" y="-1280" src="dynamic_weather/rain_light_3.png">
+				<PositionAnimation>
+					<Position x="0" y="2560" time="3000"/>
+				</PositionAnimation>
+			</Image>
+			<Image w="720" h="1280" x="20" y="-1280" src="dynamic_weather/rain_light_3.png">
+				<PositionAnimation>
+					<Position x="0" y="0" time="1500"/>
+					<Position x="0" y="1280" time="3000"/>
+				</PositionAnimation>
+			</Image>
+			<Image w="720" h="1280" x="20" y="-1280" src="dynamic_weather/rain_light_3.png">
+				<PositionAnimation>
+					<Position x="0" y="1280" time="0"/>
+					<Position x="0" y="2560" time="1500"/>
+					<Position x="0" y="2560" time="3000"/>
+				</PositionAnimation>
+			</Image>
+		</Group>
+		<Image name="rain_light_overlay_bottom" x="0" y="600" w="#view_width" h="680" src="dynamic_weather/rain_light_overlay_bottom.png"/>
+		<Image name="snow_light_overlay" x="0" y="0" w="#view_width" h="#view_height" src="dynamic_weather/rain_light_overlay.png"/>
+	</Group>	
+
+	<!--sleet  <Image name="bg" x="0" y="0" w="#view_width" h="#view_height" src="dynamic_weather/bg_rainheavy.png"/>-->
+	<Group name="ani_sleet" visibility="eq(#weather_type, 7)+eq(#fade_weather,7)" alpha="ifelse(eq(#weather_type, 7),#fade_in_anim,#fade_out_anim)">
+		   
+  	<Group name="ani_sleet_rain_1" x="20" rotation="5">
+			<Image alpha="180" w="720" h="1280" x="20" y="-1280" src="dynamic_weather/rain_light_1.png">
+				<PositionAnimation>
+					<Position x="0" y="2560" time="1500"/>
+					<Position x="0" y="2560" time="3000"/>
+				</PositionAnimation>
+			</Image>
+			<Image alpha="180" w="720" h="1280" x="20" y="-1280" src="dynamic_weather/rain_light_1.png">
+				<PositionAnimation>
+					<Position x="0" y="0" time="750"/>
+					<Position x="0" y="2560" time="2250"/>
+					<Position x="0" y="2560" time="3000"/>
+				</PositionAnimation>
+			</Image>
+			<Image alpha="180" w="720" h="1280" x="20" y="-1280" src="dynamic_weather/rain_light_1.png">
+				<PositionAnimation>
+					<Position x="0" y="0" time="1500"/>
+					<Position x="0" y="2560" time="3000"/>
+				</PositionAnimation>
+			</Image>
+			<Image alpha="180" w="720" h="1280" x="20" y="-1280" src="dynamic_weather/rain_light_1.png">
+				<PositionAnimation>
+					<Position x="0" y="0" time="2250"/>
+					<Position x="0" y="1280" time="3000"/>
+				</PositionAnimation>
+			</Image>
+			<Image alpha="180" w="720" h="1280" x="20" y="-1280" src="dynamic_weather/rain_light_1.png">
+				<PositionAnimation>
+					<Position x="0" y="1280" time="0"/>
+					<Position x="0" y="2560" time="750"/>
+					<Position x="0" y="2560" time="3000"/>
+				</PositionAnimation>
+			</Image>
+		</Group>
+    <Group name="ani_sleet_snow" x="20" rotation="2">
+			<Image w="720" h="1280" alpha="125" x="20" y="-1280" src="dynamic_weather/snow_light_2.png">
+				<PositionAnimation>
+					<Position x="0" y="2560" time="12000"/>
+					<Position x="0" y="2560" time="18000"/>
+				</PositionAnimation>
+			</Image>
+			<Image w="720" h="1280" alpha="125" x="20" y="-1280" src="dynamic_weather/snow_light_2.png">
+				<PositionAnimation>
+					<Position x="0" y="0" time="6000"/>
+					<Position x="0" y="2560" time="18000"/>
+				</PositionAnimation>
+			</Image>
+			<Image w="720" h="1280" alpha="125" x="20" y="-1280" src="dynamic_weather/snow_light_2.png">
+				<PositionAnimation>
+					<Position x="0" y="1280" time="0"/>
+					<Position x="0" y="2560" time="6000"/>
+					<Position x="0" y="2560" time="18000"/>
+				</PositionAnimation>
+			</Image>
+			<Image w="720" h="1280" alpha="125" x="20" y="-1280" src="dynamic_weather/snow_light_2.png">
+				<PositionAnimation>
+					<Position x="0" y="0" time="12000"/>
+					<Position x="0" y="1280" time="18000"/>
+				</PositionAnimation>
+			</Image>
+		</Group>
+		<Group name="ani_sleet_rain_3" x="40" rotation="7">
+			<Image w="720" h="1280" x="20" y="-1280" src="dynamic_weather/rain_light_3.png">
+				<PositionAnimation>
+					<Position x="0" y="2560" time="3000"/>
+				</PositionAnimation>
+			</Image>
+			<Image w="720" h="1280" x="20" y="-1280" src="dynamic_weather/rain_light_3.png">
+				<PositionAnimation>
+					<Position x="0" y="0" time="1500"/>
+					<Position x="0" y="1280" time="3000"/>
+				</PositionAnimation>
+			</Image>
+			<Image w="720" h="1280" x="20" y="-1280" src="dynamic_weather/rain_light_3.png">
+				<PositionAnimation>
+					<Position x="0" y="1280" time="0"/>
+					<Position x="0" y="2560" time="1500"/>
+					<Position x="0" y="2560" time="3000"/>
+				</PositionAnimation>
+			</Image>
+		</Group>
+		<Group name="sleet_blur" x="20" rotation="0">
+			<Image x="20" y="-1280" w="720" h="1280" src="dynamic_weather/sleet_blur.png">
+				<PositionAnimation>
+					<Position x="0" y="2560" time="7500"/>
+					<Position x="0" y="2560" time="18000"/>
+				</PositionAnimation>
+			</Image>
+			<Image x="20" y="-1280" w="720" h="1280" src="dynamic_weather/sleet_blur.png">
+				<PositionAnimation>
+					<Position x="0" y="0" time="4500"/>
+					<Position x="0" y="2560" time="12000"/>
+					<Position x="0" y="2560" time="18000"/>
+				</PositionAnimation>
+			</Image>
+			<Image x="20" y="-1280" w="720" h="1280" src="dynamic_weather/sleet_blur.png">
+				<PositionAnimation>
+					<Position x="0" y="0" time="9000"/>
+					<Position x="0" y="2560" time="16500"/>
+					<Position x="0" y="2560" time="18000"/>
+				</PositionAnimation>
+			</Image>
+			<Image x="20" y="-1280" w="720" h="1280" src="dynamic_weather/sleet_blur.png">
+				<PositionAnimation>
+					<Position x="0" y="0" time="13500"/>
+					<Position x="0" y="1536" time="18000"/>
+				</PositionAnimation>
+			</Image>
+			<Image x="20" y="-1280" w="720" h="1280" src="dynamic_weather/sleet_blur.png">
+				<PositionAnimation>
+					<Position x="0" y="1536" time="0"/>
+					<Position x="0" y="2560" time="3000"/>
+					<Position x="0" y="2560" time="18000"/>
+				</PositionAnimation>
+			</Image>
+		</Group>
+		<Image name="snow_light_overlay" x="0" y="0" w="#view_width" h="#view_height" src="dynamic_weather/rain_heavy_overlay.png"/>
+		<Image name="snow_light_overlay_bottom" x="0" y="600" w="#view_width" h="680" src="dynamic_weather/rain_heavy_overlay_bottom.png"/>
+	</Group>		
+	<!--thunder <Image name="bg" x="0" y="0" w="#view_width" h="#view_height" src="dynamic_weather/bg_thunder.png"/>-->
+	<Group name="ani_thunder" visibility="eq(#weather_type, 6)+eq(#fade_weather,6)" alpha="ifelse(eq(#weather_type, 6),#fade_in_anim,#fade_out_anim)">
+		  	
+    <Group name="ani_rainheavy_rain_1" x="40" rotation="7">
+			<Image x="20" y="-1280" src="dynamic_weather/rain_heavy_1.png">
+				<PositionAnimation>
+					<Position x="0" y="2560" time="1000"/>
+					<Position x="0" y="2560" time="2000"/>
+				</PositionAnimation>
+			</Image>
+			<Image x="20" y="-1280" src="dynamic_weather/rain_heavy_1.png">
+				<PositionAnimation>
+					<Position x="0" y="0" time="500"/>
+					<Position x="0" y="2560" time="1500"/>
+					<Position x="0" y="2560" time="2000"/>
+				</PositionAnimation>
+			</Image>
+			<Image x="20" y="-1280" src="dynamic_weather/rain_heavy_1.png">
+				<PositionAnimation>
+					<Position x="0" y="0" time="1000"/>
+					<Position x="0" y="2560" time="2000"/>
+				</PositionAnimation>
+			</Image>
+			<Image x="20" y="-1280" src="dynamic_weather/rain_heavy_1.png">
+				<PositionAnimation>
+					<Position x="0" y="0" time="1500"/>
+					<Position x="0" y="1280" time="2000"/>
+				</PositionAnimation>
+			</Image>
+			<Image x="20" y="-1280" src="dynamic_weather/rain_heavy_1.png">
+				<PositionAnimation>
+					<Position x="0" y="1280" time="0"/>
+					<Position x="0" y="2560" time="500"/>
+					<Position x="0" y="2560" time="2000"/>
+				</PositionAnimation>
+			</Image>
+		</Group>
+   	<Group name="ani_rainheavy_rain_2" x="40" rotation="7">
+			<Image w="720" h="1280" x="20" y="-1280" src="dynamic_weather/rain_heavy_2.png">
+				<PositionAnimation>
+					<Position x="0" y="2560" time="1500"/>
+					<Position x="0" y="2560" time="2000"/>
+				</PositionAnimation>
+			</Image>
+			<Image w="720" h="1280" x="20" y="-1280" src="dynamic_weather/rain_heavy_2.png">
+				<PositionAnimation>
+					<Position x="0" y="0" time="1000"/>
+					<Position x="0" y="1706" time="2000"/>
+				</PositionAnimation>
+			</Image>
+			<Image w="720" h="1280" x="20" y="-1280" src="dynamic_weather/rain_heavy_2.png">
+				<PositionAnimation>
+					<Position x="0" y="1706" time="0"/>
+					<Position x="0" y="2560" time="500"/>
+					<Position x="0" y="2560" time="2000"/>
+				</PositionAnimation>
+			</Image>
+			<Image w="720" h="1280" x="20" y="-1280" src="dynamic_weather/rain_heavy_2.png">
+				<PositionAnimation>
+					<Position x="0" y="1280" time="0"/>
+					<Position x="0" y="2560" time="1000"/>
+					<Position x="0" y="2560" time="3000"/>
+				</PositionAnimation>
+			</Image>
+		</Group>
+		<Group name="ani_rainheavy_rain_3" x="40" rotation="7">
+			<Image w="720" h="1280" x="20" y="-1280" src="dynamic_weather/rain_light_3.png">
+				<PositionAnimation>
+					<Position x="0" y="2560" time="3000"/>
+				</PositionAnimation>
+			</Image>
+			<Image w="720" h="1280" x="20" y="-1280" src="dynamic_weather/rain_light_3.png">
+				<PositionAnimation>
+					<Position x="0" y="0" time="1500"/>
+					<Position x="0" y="1280" time="3000"/>
+				</PositionAnimation>
+			</Image>
+			<Image w="720" h="1280" x="20" y="-1280" src="dynamic_weather/rain_light_3.png">
+				<PositionAnimation>
+					<Position x="0" y="1280" time="0"/>
+					<Position x="0" y="2560" time="1500"/>
+					<Position x="0" y="2560" time="3000"/>
+				</PositionAnimation>
+			</Image>
+		</Group>
+    <Group name="ani_thunder">
+    	<Image x="-600" y= "-1000" scale="7" src="dynamic_weather/thunder_halo_1.png">
+	     	<AlphaAnimation>
+	      	<Alpha a="0" time="0"/>
+	      	<Alpha a="200" time="100"/>
+	      	<Alpha a="0" time="1200"/>
+	      	<Alpha a="0" time="6000"/>
+	     	</AlphaAnimation>
+			</Image>
+      <Image x="0" y="-900" scale="6" src="dynamic_weather/thunder_halo_1.png">
+	    	<AlphaAnimation>
+		    	<Alpha a="0" time="100"/>
+		      <Alpha a="200" time="200"/>
+		      <Alpha a="0" time="1300"/>
+		      <Alpha a="0" time="1800"/>
+		      <Alpha a="125" time="1900"/>
+		      <Alpha a="0" time="2500"/>
+		      <Alpha a="0" time="8000"/>
+	      </AlphaAnimation>
+			</Image>
+      <Image x="-400" y="0" w="1600" h="480" src="dynamic_weather/thunder_halo_2.png">
+				<PositionAnimation>
+					<Position x="240" y="0" time="1600"/>
+					<Position x="240" y="0" time="6000"/>
+				</PositionAnimation>
+	      <AlphaAnimation>
+		    	<Alpha a="0" time="0"/>
+		    	<Alpha a="250" time="300"/>
+		    	<Alpha a="0" time="1600"/>
+		    	<Alpha a="60" time="1800"/>
+		    	<Alpha a="0" time="2200"/>
+		    	<Alpha a="0" time="8000"/>
+	       </AlphaAnimation>
+			</Image>
+      <Image x="-1000" y="-1600" scale="12" src="dynamic_weather/thunder_halo_3.png">
+     		<AlphaAnimation>
+      		<Alpha a="0" time="200"/>
+      		<Alpha a="255" time="260"/>
+     			<Alpha a="0" time="1600"/>
+      		<Alpha a="0" time="6000"/>
+     		</AlphaAnimation>
+			</Image>
+		</Group>
+		<Image name="snow_light_overlay_bottom" x="0" y="600" w="#view_width" h="680" src="dynamic_weather/rain_thunder_overlay_bottom.png"/>
+	</Group>	
+
+	<!--snow heavy  <Image name="bg" x="0" y="0" w="#view_width" h="#view_height" src="dynamic_weather/bg_snowheavy.png"/>-->
+	<Group name="ani_snow_heavy" visibility="eq(#weather_type, 5)+eq(#fade_weather,5)" alpha="ifelse(eq(#weather_type, 5),#fade_in_anim,#fade_out_anim)">
+   
+		<Group name="ani_snowlight_snow" x="20" rotation="5">
+			<Image alpha="125" w="720" h="1280" x="20" y="-1280" src="dynamic_weather/snow_heavy_2.png">
+				<PositionAnimation>
+					<Position x="0" y="2560" time="16000"/>
+					<Position x="0" y="2560" time="24000"/>
+				</PositionAnimation>
+			</Image>
+			<Image alpha="125" w="720" h="1280" x="20" y="-1280" src="dynamic_weather/snow_heavy_2.png">
+				<PositionAnimation>
+					<Position x="0" y="0" time="8000"/>
+					<Position x="0" y="2560" time="24000"/>
+				</PositionAnimation>
+			</Image>
+			<Image alpha="125" w="720" h="1280" x="20" y="-1280" src="dynamic_weather/snow_heavy_2.png">
+				<PositionAnimation>
+					<Position x="0" y="1280" time="0"/>
+					<Position x="0" y="2560" time="8000"/>
+					<Position x="0" y="2560" time="24000"/>
+				</PositionAnimation>
+			</Image>
+			<Image alpha="125" w="720" h="1280" x="20" y="-1280" src="dynamic_weather/snow_heavy_2.png">
+				<PositionAnimation>
+					<Position x="0" y="0" time="16000"/>
+					<Position x="0" y="1280" time="24000"/>
+				</PositionAnimation>
+			</Image>
+		</Group>
+		<Group name="ani_snowlight_snow_2" x="20" rotation="5">
+			<Image w="720" h="1280" x="20" y="-1280" src="dynamic_weather/snow_heavy_1.png">
+				<PositionAnimation>
+					<Position x="0" y="2560" time="12000"/>
+					<Position x="0" y="2560" time="24000"/>
+				</PositionAnimation>
+			</Image>
+			<Image w="720" h="1280" x="20" y="-1280" src="dynamic_weather/snow_heavy_1.png">
+				<PositionAnimation>
+					<Position x="0" y="0" time="6000"/>
+					<Position x="0" y="2560" time="18000"/>
+					<Position x="0" y="2560" time="24000"/>
+				</PositionAnimation>
+			</Image>
+			<Image w="720" h="1280" x="20" y="-1280" src="dynamic_weather/snow_heavy_1.png">
+				<PositionAnimation>
+					<Position x="0" y="0" time="12000"/>
+					<Position x="0" y="2560" time="24000"/>
+				</PositionAnimation>
+			</Image>
+			<Image w="720" h="1280" x="20" y="-1280" src="dynamic_weather/snow_heavy_1.png">
+				<PositionAnimation>
+					<Position x="0" y="0" time="18000"/>
+					<Position x="0" y="1280" time="24000"/>
+				</PositionAnimation>
+			</Image>
+			<Image w="720" h="1280" x="20" y="-1280" src="dynamic_weather/snow_heavy_1.png">
+				<PositionAnimation>
+					<Position x="0" y="1280" time="0"/>
+					<Position x="0" y="2560" time="6000"/>
+					<Position x="0" y="2560" time="24000"/>
+				</PositionAnimation>
+			</Image>
+		</Group>
+		<Group name="ani_snowlight_snow_3" x="20" rotation="6">
+			<Image w="720" h="1280" x="20" y="-1280" w="720" h="1280" src="dynamic_weather/snow_light_3.png">
+				<PositionAnimation>
+					<Position x="0" y="2560" time="10000"/>
+					<Position x="0" y="2560" time="24000"/>
+				</PositionAnimation>
+			</Image>
+			<Image w="720" h="1280" x="20" y="-1280" w="720" h="1280" src="dynamic_weather/snow_light_3.png">
+				<PositionAnimation>
+					<Position x="0" y="0" time="6000"/>
+					<Position x="0" y="2560" time="16000"/>
+					<Position x="0" y="2560" time="24000"/>
+				</PositionAnimation>
+			</Image>
+			<Image w="720" h="1280" x="20" y="-1280" w="720" h="1280" src="dynamic_weather/snow_light_3.png">
+				<PositionAnimation>
+					<Position x="0" y="0" time="12000"/>
+					<Position x="0" y="2560" time="22000"/>
+					<Position x="0" y="2560" time="24000"/>
+				</PositionAnimation>
+			</Image>
+			<Image w="720" h="1280" x="20" y="-1280" w="720" h="1280" src="dynamic_weather/snow_light_3.png">
+				<PositionAnimation>
+					<Position x="0" y="0" time="18000"/>
+					<Position x="0" y="1536" time="24000"/>
+				</PositionAnimation>
+			</Image>
+			<Image w="720" h="1280" x="20" y="-1280" w="720" h="1280" src="dynamic_weather/snow_light_3.png">
+				<PositionAnimation>
+					<Position x="0" y="1536" time="0"/>
+					<Position x="0" y="2560" time="4000"/>
+					<Position x="0" y="2560" time="24000"/>
+				</PositionAnimation>
+			</Image>
+		</Group>
+		<Group name="ani_snowlight_snow_3" x="20" rotation="6">
+			<Image alpha="80" x="200" y="-120" w="120" h="120" src="dynamic_weather/snow_heavy_3.png">
+				<PositionAnimation>
+					<Position x="0" y="1500" time="3000"/>
+					<Position x="0" y="1500" time="15000"/>
+				</PositionAnimation>
+      </Image>
+			<Image alpha="60" x="320" y="-120" w="120" h="120" src="dynamic_weather/snow_heavy_3.png">
+				<PositionAnimation>
+					<Position x="0" y="0" time="5000"/>
+					<Position x="0" y="1500" time="8000"/>
+					<Position x="0" y="1500" time="18000"/>
+				</PositionAnimation>
+      </Image>
+			<Image alpha="80" x="460" y="-120" w="120" h="120" src="dynamic_weather/snow_heavy_3.png">
+				<PositionAnimation>
+					<Position x="0" y="0" time="6000"/>
+					<Position x="0" y="1500" time="9000"/>
+					<Position x="0" y="1500" time="16000"/>
+				</PositionAnimation>
+      </Image>
+		</Group>
+	<Group name="snow_light_overlay_group" visibility="ge(#hour24,6)*le(#hour24,17)">
+		<Image name="snow_light_overlay" x="0" y="0" w="#view_width" h="909" src="dynamic_weather/snow_light_overlay_2.png"/>
+		<Image name="snow_light_overlay" x="0" y="0" w="#view_width" h="#view_height" src="dynamic_weather/snow_heavy_overlay.png"/>
+		<Image name="snow_light_overlay_bottom" x="0" y="600" w="#view_width" h="680" src="dynamic_weather/snow_heavy_overlay_bottom.png"/>
+	</Group>
+	
+	</Group>
+	<!--hallstone <Image name="bg" x="0" y="0" w="#view_width" h="#view_height" src="dynamic_weather/bg_rainheavy.png"/>-->
+	<Group name="ani_hallstone" visibility="eq(#weather_type, 4)+eq(#fade_weather,4)" alpha="ifelse(eq(#weather_type, 4),#fade_in_anim,#fade_out_anim)">
+     	
+    <Group name="ani_rainlight_rain_1" x="0" rotation="3">
+			<Image w="720" h="1280" alpha="180" x="20" y="-1280" src="dynamic_weather/hallstone_1.png">
+				<PositionAnimation>
+					<Position x="0" y="2560" time="1000"/>
+					<Position x="0" y="2560" time="3000"/>
+				</PositionAnimation>
+			</Image>
+		</Group>
+    <Group name="ani_rainlight_rain_2" x="0" rotation="3">
+			<Image w="720" h="1280"  x="20" y="-1280" src="dynamic_weather/hallstone_2.png">
+				<PositionAnimation>
+					<Position x="0" y="2560" time="1500"/>
+					<Position x="0" y="2560" time="3000"/>
+				</PositionAnimation>
+			</Image>
+			<Image w="720" h="1280"  x="20" y="-1280" src="dynamic_weather/hallstone_2.png">
+				<PositionAnimation>
+					<Position x="0" y="0" time="1500"/>
+					<Position x="0" y="2560" time="3000"/>
+				</PositionAnimation>
+			</Image>
+			<Image w="720" h="1280"  x="20" y="-1280" src="dynamic_weather/hallstone_2.png">
+				<PositionAnimation>
+					<Position x="0" y="0" time="2250"/>
+					<Position x="0" y="1280" time="3000"/>
+				</PositionAnimation>
+			</Image>
+			<Image w="720" h="1280"  x="20" y="-1280" src="dynamic_weather/hallstone_2.png">
+				<PositionAnimation>
+					<Position x="0" y="1280" time="0"/>
+					<Position x="0" y="2560" time="750"/>
+					<Position x="0" y="2560" time="3000"/>
+				</PositionAnimation>
+			</Image>
+		</Group>
+    <Group name="ani_rainlight_rain_3" x="0" rotation="3">
+			<Image w="720" h="1280" x="20" y="-1280" src="dynamic_weather/rain_light_3.png">
+				<PositionAnimation>
+					<Position x="0" y="2560" time="3000"/>
+				</PositionAnimation>
+			</Image>
+			<Image w="720" h="1280" x="20" y="-1280" src="dynamic_weather/rain_light_3.png">
+				<PositionAnimation>
+					<Position x="0" y="0" time="1500"/>
+					<Position x="0" y="1280" time="3000"/>
+				</PositionAnimation>
+			</Image>
+			<Image w="720" h="1280" x="20" y="-1280" src="dynamic_weather/rain_light_3.png">
+				<PositionAnimation>
+					<Position x="0" y="1280" time="0"/>
+					<Position x="0" y="2560" time="1500"/>
+					<Position x="0" y="2560" time="3000"/>
+				</PositionAnimation>
+			</Image>
+		</Group>
+		<Image name="snow_light_overlay" x="0" y="0" w="#view_width" h="#view_height" src="dynamic_weather/rain_heavy_overlay.png"/>
+		<Image name="snow_light_overlay_bottom" x="0" y="600" w="#view_width" h="680" src="dynamic_weather/rain_heavy_overlay_bottom.png"/>
+	</Group>
+	<!--rain heavy <Image name="bg" x="0" y="0" w="#view_width" h="#view_height" src="dynamic_weather/bg_rainheavy.png"/>-->
+	<Group name="ani_rainheavy" visibility="eq(#weather_type, 3)+eq(#fade_weather,3)" alpha="ifelse(eq(#weather_type, 3),#fade_in_anim,#fade_out_anim)">
+  	
+    <Group name="ani_rainheavy_rain_1" x="40" rotation="7">
+			<Image x="20" y="-1280" src="dynamic_weather/rain_heavy_1.png">
+				<PositionAnimation>
+					<Position x="0" y="2560" time="1000"/>
+					<Position x="0" y="2560" time="2000"/>
+				</PositionAnimation>
+			</Image>
+			<Image x="20" y="-1280" src="dynamic_weather/rain_heavy_1.png">
+				<PositionAnimation>
+					<Position x="0" y="0" time="500"/>
+					<Position x="0" y="2560" time="1500"/>
+					<Position x="0" y="2560" time="2000"/>
+				</PositionAnimation>
+			</Image>
+			<Image x="20" y="-1280" src="dynamic_weather/rain_heavy_1.png">
+				<PositionAnimation>
+					<Position x="0" y="0" time="1000"/>
+					<Position x="0" y="2560" time="2000"/>
+				</PositionAnimation>
+			</Image>
+			<Image x="20" y="-1280" src="dynamic_weather/rain_heavy_1.png">
+				<PositionAnimation>
+					<Position x="0" y="0" time="1500"/>
+					<Position x="0" y="1280" time="2000"/>
+				</PositionAnimation>
+			</Image>
+			<Image x="20" y="-1280" src="dynamic_weather/rain_heavy_1.png">
+				<PositionAnimation>
+					<Position x="0" y="1280" time="0"/>
+					<Position x="0" y="2560" time="500"/>
+					<Position x="0" y="2560" time="2000"/>
+				</PositionAnimation>
+			</Image>
+		</Group>
+   	<Group name="ani_rainheavy_rain_2" x="40" rotation="7">
+			<Image w="720" h="1280" x="20" y="-1280" src="dynamic_weather/rain_heavy_2.png">
+				<PositionAnimation>
+					<Position x="0" y="2560" time="1500"/>
+					<Position x="0" y="2560" time="2000"/>
+				</PositionAnimation>
+			</Image>
+			<Image w="720" h="1280" x="20" y="-1280" src="dynamic_weather/rain_heavy_2.png">
+				<PositionAnimation>
+					<Position x="0" y="0" time="1000"/>
+					<Position x="0" y="1706" time="2000"/>
+				</PositionAnimation>
+			</Image>
+			<Image w="720" h="1280" x="20" y="-1280" src="dynamic_weather/rain_heavy_2.png">
+				<PositionAnimation>
+					<Position x="0" y="1706" time="0"/>
+					<Position x="0" y="2560" time="500"/>
+					<Position x="0" y="2560" time="2000"/>
+				</PositionAnimation>
+			</Image>
+			<Image w="720" h="1280" x="20" y="-1280" src="dynamic_weather/rain_heavy_2.png">
+				<PositionAnimation>
+					<Position x="0" y="1280" time="0"/>
+					<Position x="0" y="2560" time="1000"/>
+					<Position x="0" y="2560" time="3000"/>
+				</PositionAnimation>
+			</Image>
+		</Group>
+  	<Group name="ani_rainheavy_rain_3" x="40" rotation="7">
+			<Image w="720" h="1280" x="20" y="-1280" src="dynamic_weather/rain_light_3.png">
+				<PositionAnimation>
+					<Position x="0" y="2560" time="3000"/>
+				</PositionAnimation>
+			</Image>
+			<Image w="720" h="1280" x="20" y="-1280" src="dynamic_weather/rain_light_3.png">
+				<PositionAnimation>
+					<Position x="0" y="0" time="1500"/>
+					<Position x="0" y="1280" time="3000"/>
+				</PositionAnimation>
+			</Image>
+			<Image w="720" h="1280" x="20" y="-1280" src="dynamic_weather/rain_light_3.png">
+				<PositionAnimation>
+					<Position x="0" y="1280" time="0"/>
+					<Position x="0" y="2560" time="1500"/>
+					<Position x="0" y="2560" time="3000"/>
+				</PositionAnimation>
+			</Image>
+		</Group>
+		<Image name="snow_light_overlay" x="0" y="0" w="#view_width" h="#view_height" src="dynamic_weather/rain_heavy_overlay.png"/>
+		<Image name="snow_light_overlay_bottom" x="0" y="600" w="#view_width" h="680" src="dynamic_weather/rain_heavy_overlay_bottom.png"/>
+	</Group>	
+	<!--haze <Image name="bg" x="0" y="0" w="#view_width" h="#view_height" src="dynamic_weather/bg_haze.png"/>-->
+	<Group name="ani_haze" visibility="eq(#weather_type, 2)+eq(#fade_weather,2)" alpha="ifelse(eq(#weather_type, 2),#fade_in_anim,#fade_out_anim)">
+		
+		<Image name="fog_sun" x="120" y="-50" w="728" h="728" src="fog_sun.png"/>
+		<Image name="fog1" alpha="125" x="1000" y="-240" w="3000" h="1600" src="dynamic_weather/fog1.png">
+			<PositionAnimation delay="-80000">
+				<Position x="0" y="0" time="0"/>
+				<Position x="-4000" y="0" time="160000"/>
+			</PositionAnimation>
+		</Image>
+		<Image name="fog2" alpha="125" x="1000" y="-240" w="3000" h="1600" src="dynamic_weather/fog2.png">
+			<PositionAnimation delay="-60000">
+				<Position x="0" y="0" time="0"/>
+				<Position x="-4000" y="0" time="120000"/>
+			</PositionAnimation>
+		</Image>
+		<Image name="fog3" x="1000" y="-240" w="3000" h="1600" src="dynamic_weather/fog3.png">
+			<PositionAnimation delay="-40000">
+				<Position x="0" y="0" time="0"/>
+				<Position x="-4000" y="0" time="80000"/>
+			</PositionAnimation>
+		</Image>
+		<Image name="fog1" x="1000" y="-240" w="3000" h="1600" src="dynamic_weather/fog1.png">
+			<PositionAnimation>
+				<Position x="0" y="0" time="0"/>
+				<Position x="-4000" y="0" time="160000"/>
+			</PositionAnimation>
+		</Image>
+		<Image name="fog2" x="1000" y="-240" w="3000" h="1600" src="dynamic_weather/fog2.png">
+			<PositionAnimation>
+				<Position x="0" y="0" time="0"/>
+				<Position x="-4000" y="0" time="120000"/>
+			</PositionAnimation>
+		</Image>
+		<Image name="fog3" alpha="125" x="1000" y="-240" w="3000" h="1600" src="dynamic_weather/fog3.png">
+			<PositionAnimation>
+				<Position x="0" y="0" time="0"/>
+				<Position x="-4000" y="0" time="80000"/>
+			</PositionAnimation>
+		</Image>
+	</Group>
+	
+	<Group name="ani_sand" visibility="eq(#weather_type, 1)+eq(#fade_weather,1)" alpha="ifelse(eq(#weather_type, 1),#fade_in_anim,#fade_out_anim)">
+		
+		<Image name="fog1" alpha="125" x="1000" y="-240" w="3000" h="1600" src="dynamic_weather/sand1.png">
+			<PositionAnimation delay="-40000">
+				<Position x="0" y="0" time="0"/>
+				<Position x="-4000" y="0" time="80000"/>
+			</PositionAnimation>
+		</Image>
+		<Image name="fog2" alpha="125" x="1000" y="-240" w="3000" h="1600" src="dynamic_weather/sand2.png">
+			<PositionAnimation delay="-30000">
+				<Position x="0" y="0" time="0"/>
+				<Position x="-4000" y="0" time="60000"/>
+			</PositionAnimation>
+		</Image>
+		<Image name="fog3" x="1000" y="-240" w="3000" h="1600" src="dynamic_weather/sand3.png">
+			<PositionAnimation delay="-20000">
+				<Position x="0" y="0" time="0"/>
+				<Position x="-4000" y="0" time="40000"/>
+			</PositionAnimation>
+		</Image>
+		<Image name="fog1" x="1000" y="-240" w="3000" h="1600" src="dynamic_weather/sand1.png">
+			<PositionAnimation>
+				<Position x="0" y="0" time="0"/>
+				<Position x="-4000" y="0" time="80000"/>
+			</PositionAnimation>
+		</Image>
+		<Image name="fog2" x="1000" y="-240" w="3000" h="1600" src="dynamic_weather/sand2.png">
+			<PositionAnimation>
+				<Position x="0" y="0" time="0"/>
+				<Position x="-4000" y="0" time="60000"/>
+			</PositionAnimation>
+		</Image>
+		<Image name="fog3" alpha="125" x="1000" y="-240" w="3000" h="1600" src="dynamic_weather/sand1.png">
+			<PositionAnimation>
+				<Position x="0" y="0" time="0"/>
+				<Position x="-4000" y="0" time="40000"/>
+			</PositionAnimation>
+		</Image>		
+	</Group>
+	</VirtualScreen>
+
+        
+	</Group>
+	
+	
+	 <!-- <Text name ="aaa" x="0" y="0" color="#FFFFFFFF" size="50" 
+                format="showWeather :%d  " paras="#showWeather" />
+    <Text name ="aaa" x="0" y="100" color="#FFFFFFFF" size="50" 
+                format="showListWeather :%d  " paras="#showListWeather" />
+     <Text name ="aaa" x="0" y="200" color="#FFFFFFFF" size="50" 
+                format="mask_alpha :%d  " paras="#mask_alpha" />  -->
+    
+
+      <Rectangle   x="0" y="0" width="720" height="1280" fillColor="#000000"   alpha="ifelse(gt(#weather_type, 0),#showListWeather_alpha,#showList_alpha)"/>
+
+      <Var name ="showList"  expression="ge(#sms_unread+#miss_call,1) * le(#weather_type, 0)"/>
+      <Var name ="showList_alpha"  expression="ifelse(#showList,#list_mask_alpha_show,#list_mask_alpha_miss)"/>
+     
+       <Var name ="showListWeather"  expression="ge(#sms_unread+#miss_call,1) * gt(#weather_type, 0)"/>
+       <Var name ="showListWeather_alpha"  expression="ifelse(#showListWeather,#weather_mask_alpha_show,#weather_mask_alpha_miss)"/>
+     
+       <Var  expression="#showList" threshold="1">
+                <Trigger>
+                    <Command target="list_mask_alpha_show.animation" value="play"  condition="ge(#showList,1)"/>
+                    <Command target="list_mask_alpha_miss.animation" value="play"  condition="le(#showList,0)"/>
+                </Trigger>
+            </Var>
+    
+     <Var name="list_mask_alpha_show">
+            <VariableAnimation>
+                <AniFrame value="255*0" time="0"/>
+                <AniFrame value="255*0.25" time="600"/>
+                <AniFrame value="255*0.25" time="100000000000"/>
+            </VariableAnimation>
+        </Var>
+        <Var name="list_mask_alpha_miss">
+            <VariableAnimation>
+                <AniFrame value="255*0.25" time="0"/>
+                <AniFrame value="255*0" time="600"/>
+                <AniFrame value="255*0" time="100000000000"/>
+            </VariableAnimation>
+        </Var>
+
+        <Var  expression="#showListWeather" threshold="1">
+                <Trigger>
+                    <Command target="weather_mask_alpha_show.animation" value="play"  condition="ge(#showListWeather,1)"/>
+                    <Command target="weather_mask_alpha_miss.animation" value="play"  condition="le(#showListWeather,0)"/>
+                </Trigger>
+            </Var>
+    
+     <Var name="weather_mask_alpha_show">
+            <VariableAnimation>
+                <AniFrame value="255*0.15" time="0"/>
+                <AniFrame value="255*0.4" time="600"/>
+                <AniFrame value="255*0.4" time="100000000000"/>
+            </VariableAnimation>
+        </Var>
+        <Var name="weather_mask_alpha_miss">
+            <VariableAnimation>
+                <AniFrame value="255*0.4" time="0"/>
+                <AniFrame value="255*0.15" time="600"/>
+                <AniFrame value="255*0.15" time="100000000000"/>
+            </VariableAnimation>
+        </Var>
+        
+	 <VirtualScreen name="root_virtualscreen"  freeze="true" >
+	
+	<!-- <Var name="sms_unread" expression="#sms_unread_count+#mms_unread_count"/> -->
+	<Var name="sms_unread" expression="#sms_unread_count"/>
+	<Var name="miss_call" expression="#call_missed_count"/>
+
+        <Var name="unlock_view_startY" type="number" expression="#screen_height*(1280-370-#virtual_pan_height)/1280" const="true"/>
+        <Var name="unlock_view_centerY" type="number" expression="#unlock_view_startY+#screen_height*70/1280"/>		
+		
+		<!-- 音乐控件 -->
+		<Var name="music_btn_y" expression="265"/>
+		<MusicControl name="music_control" autoShow="true" visibility="false">
+		    <Image w="#screen_width" h="#screen_height" src="music/music_cover_default_bg.png" />
+			<Image name="music_album_cover" x="360" y="640" w="1280" h="1280" align="center" scaleType="centerCrop" alignV="center" antiAlias="false" blur="5" blurMaskGradient="#00000000|#ff000000" coverGradient="#00000000|#00000000|#bb000000"/>
+			<Text name="music_display" x="#screen_width/2" y="385" align="center" alignV="top" size="28" color="#ffffff" w="400" marqueeSpeed="50" shadow="5|2|3|#4d000000" textExp="@music_control.title"/>
+			<!--上一首按钮-->
+			<Button name="music_prev" x="120" y="#music_btn_y-50" w="100" h="100">
+				<Normal>
+					<Image x="120" y="#music_btn_y" alignV="center" src="music/prev_n.png"/>
+				</Normal>
+				<Pressed>
+					<Image x="120" y="#music_btn_y" alignV="center" src="music/prev_p.png"/>
+				</Pressed>
+			</Button>
+			<!--下一首按钮-->
+			<Button name="music_next" x="#screen_width-200" y="#music_btn_y-50" w="100" h="100">
+				<Normal>
+					<Image x="#screen_width-120" y="#music_btn_y" align="right" alignV="center" src="music/next_n.png"/>
+				</Normal>
+				<Pressed>
+					<Image x="#screen_width-120" y="#music_btn_y" align="right" alignV="center" src="music/next_p.png"/>
+				</Pressed>
+			</Button>
+			<!--播放按钮-->
+			<Button name="music_play" x="#screen_width/2-50" y="#music_btn_y-50" w="100" h="100">
+				<Normal>
+					<Image x="#screen_width/2" y="#music_btn_y" align="center" alignV="center" src="music/play.png"/>
+				</Normal>
+				<Pressed>
+					<Image x="#screen_width/2" y="#music_btn_y" align="center" alignV="center" src="music/play_pressed.png"/>
+				</Pressed>
+			</Button>
+			<!--暂停按钮-->
+			<Button name="music_pause" x="#screen_width/2-50" y="#music_btn_y-50" w="100" h="100">
+				<Normal>
+					<Image x="#screen_width/2" y="#music_btn_y" align="center" alignV="center" src="music/pause.png"/>
+				</Normal>
+				<Pressed>
+					<Image x="#screen_width/2" y="#music_btn_y" align="center" alignV="center" src="music/pause_pressed.png"/>
+				</Pressed>
+			</Button>
+		</MusicControl>
+
+		<!--日期时间 和天气部分-->
+		<Group name="datetime" visibility="not(#music_control.visibility)">
+			<Var name="datetime_margin_left" expression="#content_margin_left+10"/>
+			<Var name="time_pos_y" expression="140"/>
+			<Var name="time_color" expression="#FFFFFFFF"/>
+			<Var name="time_size" expression="120"/>
+			<Var name="mon_width" expression="#mon.text_width"/>
+			<Var name="lunar_calendar_width" expression="#lunar_calendar.text_width"/>
+			<Var name="hf_width" expression="0"/>
+			<Var name="hs_width" expression="#h_s.text_width"/>
+			<Var name="dot_width" expression="#t_dot.bmp_width"/>
+			<Var name="mf_width" expression="#m_f.text_width"/>
+			<Var name="ms_width" expression="#m_s.text_width"/>
+			<Var name="time_width" expression="int(#hf_width+#hs_width+#dot_width+#mf_width+#ms_width)"/>
+			<Var name="time_pos_x" expression="80"/>
+			<Var name="hour" expression="ifelse(eq(#time_format,0),#hour12,#hour24)" />
+			<Var name="lunar_week_width" expression=" ifelse(@chinese_calendar_show,#lunar_calendar_width,#week.text_width)"/>
+			<Var name="week_width" expression="#week.text_width"/>
+			<Var name="week_pos_x" expression="ifelse(@chinese_calendar_show,(#screen_width-#week_width)/2,(#screen_width-(#mon_width+#week_width))/2+#mon_width + 8)"/>
+			<Var name="time_aside_str"  type="string" expression="ifelse(@chinese_calendar_show,@time_aside_str_ch,@time_aside_str_en)" />
+			<Var name="time_aside_str_ch"  type="string" expression="ifelse(
+			                                                 ge(#hour24, 0) *lt(#hour24, 3), @time_0_2 ,
+			                                                 ge(#hour24, 3) *lt(#hour24, 6), @time_3_5 ,
+			                                                 ge(#hour24, 6) *lt(#hour24, 10), @time_6_9 ,
+			                                                 ge(#hour24, 10) *lt(#hour24, 12), @time_10_11 ,
+			                                                 ge(#hour24, 12) *lt(#hour24, 13), @time_12 ,
+			                                                 ge(#hour24, 13) *lt(#hour24, 17), @time_13_16 ,
+			                                                 ge(#hour24, 17) *lt(#hour24, 19), @time_17_18 ,
+			                                                 ge(#hour24, 19) *lt(#hour24, 24), @time_19_23 ,
+			                                                 @time_0_2 )" />
+			<Var name="time_aside_str_en"  type="string" expression="ifelse(
+                                                             ge(#hour24, 0) *lt(#hour24, 12), @am ,
+                                                             ge(#hour24, 12) *lt(#hour24, 24), @pm ,
+                                                             @am)" />
+			<Group>	
+			
+			<Var name="mHour12Time" expression="ifelse(eq(#hour24,12),12,eq(#hour24,0),12,#hour12)"/>
+			
+			<Group name="hour12_group" visibility="eq(#time_format,0)">
+			<Image name="big_time_hour12_1"  x="#time_pos_x+#hf_width" y="#time_pos_y"  srcExp="'time/big_time_'+ifelse(eq(len(#mHour12Time),2),substr(#mHour12Time,0,1),'0')+'.png'"  />
+			<Image name="big_time_hour12_2"  x="#time_pos_x+#hf_width+#big_time_hour12_1.bmp_width" y="#time_pos_y" srcExp="'time/big_time_'+ifelse(eq(len(#mHour12Time),2),substr(#mHour12Time,1,1),substr(#mHour12Time,0,1))+'.png'"/>	
+			</Group>
+
+			<Group name="hour24_group" visibility="eq(#time_format,1)">
+			<Image name="big_time_hour24_1"  x="#time_pos_x+#hf_width" y="#time_pos_y" srcExp="'time/big_time_'+ifelse(eq(len(#hour24),2),substr(#hour24,0,1),'0')+'.png'"  />
+			<Image name="big_time_hour24_2"  x="#time_pos_x+#hf_width+#big_time_hour24_1.bmp_width" y="#time_pos_y" srcExp="'time/big_time_'+ifelse(eq(len(#hour24),2),substr(#hour24,1,1),substr(#hour24,0,1))+'.png'"/>	
+			</Group>
+			
+			<Var name="big_time_hour_w" expression="ifelse(eq(#time_format,0),#big_time_hour12_1.bmp_width+#big_time_hour12_2.bmp_width,#big_time_hour24_1.bmp_width+#big_time_hour24_2.bmp_width)"/>
+			<Var name="big_time_hour_h" expression="ifelse(eq(#time_format,0),#big_time_hour12_2.bmp_height,#big_time_hour24_2.bmp_height)"/>
+			
+			<Image name="big_t_dot"  x="#time_pos_x+#hf_width+#big_time_hour_w" y="#time_pos_y+100" align="left" alignV="bottom" src="time/big_time_colon.png"/>
+			
+			<Image name="big_time_minute_1"  x="#time_pos_x+#hf_width+#big_time_hour_w+#big_t_dot.bmp_width" y="#time_pos_y" srcExp="'time/big_time_'+ifelse(eq(len(#minute),2),substr(#minute,0,1),'0')+'.png'"/>
+			<Image name="big_time_minute_2"  x="#time_pos_x+#hf_width+#big_time_hour_w+#big_t_dot.bmp_width+#big_time_minute_1.bmp_width" y="#time_pos_y" srcExp="'time/big_time_'+ifelse(eq(len(#minute),2),substr(#minute,1,1),substr(#minute,0,1))+'.png'"/>
+
+			<Var name="big_time_w" expression="#time_pos_x+#hf_width+#big_time_hour_w+#big_t_dot.bmp_width+#big_time_minute_1.bmp_width+#big_time_minute_2.bmp_width"/>
+			<Var name="big_time_h" expression="#big_time_hour_h"/>	
+			
+			<Group>
+
+			<Group name="hour24_small_group">
+			<Var name="mCurrentMonth" expression="#month+1"/>
+			<Image name="small_time_hour24_1" alignV="center" x="#datetime_margin_left" y="#time_pos_y+#big_time_h+20" srcExp="'time/small_time_'+ifelse(eq(len(#mCurrentMonth),2),substr(#mCurrentMonth,0,1),'0')+'.png'"/>
+			<Image name="small_time_hour24_2" alignV="center" x="#datetime_margin_left+#small_time_hour24_1.bmp_width" y="#time_pos_y+#big_time_h+20" srcExp="'time/small_time_'+ifelse(eq(len(#mCurrentMonth),2),substr(#mCurrentMonth,1,1),substr(#mCurrentMonth,0,1))+'.png'"/>	
+			</Group>			
+
+			<Var name="small_time_hour_w" expression="#small_time_hour24_1.bmp_width+#small_time_hour24_2.bmp_width"/>
+			<Var name="small_time_hour_h" expression="#time_pos_y+#big_time_h+20"/>
+			
+			<Image name="small_t_dot"  alignV="center" x="#datetime_margin_left+#small_time_hour_w" y="#small_time_hour_h" align="left"  src="time/small_time_dot.png"/>
+			
+			<Image name="small_time_minute_1" alignV="center" x="#datetime_margin_left+#small_time_hour_w+#small_t_dot.bmp_width" y="#small_time_hour_h" srcExp="'time/small_time_'+ifelse(eq(len(#date),2),substr(#date,0,1),'0')+'.png'"/>
+			<Image name="small_time_minute_2" alignV="center" x="#datetime_margin_left+#small_time_hour_w+#small_t_dot.bmp_width+#small_time_minute_1.bmp_width" y="#small_time_hour_h" srcExp="'time/small_time_'+ifelse(eq(len(#date),2),substr(#date,1,1),substr(#date,0,1))+'.png'"/>			
+			
+			<Var name="week_marginleft_inEn" expression="ifelse(eq(#current_language,3),5,5)"/>
+			<Image name="week" alignV="center" x="#week_marginleft_inEn+#datetime_margin_left+#small_time_hour_w+#small_t_dot.bmp_width+#small_time_minute_1.bmp_width+#small_time_minute_2.bmp_width" y="#small_time_hour_h" srcExp="'time/time_'+ifelse(eq(#current_language,2),'tw',eq(#current_language,1),'cn','en')+'_'+#day_of_week+'.png'"/>
+		
+			<Image name="am_pm" alignV="center" visibility="eq(#time_format,0)" x="#week_marginleft_inEn+#datetime_margin_left+#small_time_hour_w+#small_t_dot.bmp_width+#small_time_minute_1.bmp_width+#small_time_minute_2.bmp_width+#week.bmp_width" y="#small_time_hour_h" srcExp="'time/time_'+ifelse(eq(#current_language,3),ifelse(eq(#ampm,1),'en_pm','en_am'),ifelse(
+			                                                 ge(#hour24, 0) *lt(#hour24, 3), 'cntw_shengye' ,
+			                                                 ge(#hour24, 3) *lt(#hour24, 6), 'cntw_lingcheng' ,
+			                                                 ge(#hour24, 6) *lt(#hour24, 10), 'cntw_zaocheng' ,
+			                                                 ge(#hour24, 10) *lt(#hour24, 12), 'cntw_shangwu' ,
+			                                                 ge(#hour24, 12) *lt(#hour24, 13), 'cntw_zhongwu' ,
+			                                                 ge(#hour24, 13) *lt(#hour24, 17), 'cntw_xiawu' ,
+			                                                 ge(#hour24, 17) *lt(#hour24, 19), 'cntw_bangwan' ,
+			                                                 ge(#hour24, 19) *lt(#hour24, 24), 'cntw_wanshang' ,
+			                                                 'cntw_shengye' ))+'.png'"/>
+		
+		<Group visibility="not(#music_control.visibility)*#showWeather">
+	
+		<Var name="degree" expression="replace(@weather_temperature,'℃','')" type="string"/>
+		<Var name="icon_index" expression="ifelse(eq(@weather_type,18),3,eq(#weather_type,19),5, #weather_type)"/>
+		<Var name="isSubZero" expression="eq(substr(@weather_temperature,0,1),@str_subzero)"/>
+
+		<Image name="wea_d"  alignV="center" x="#big_time_w-12" y="#small_time_hour_h" src="weather/d.png" align="left"/>
+		
+		<Image name="degree_t_2"  alignV="center" x="#big_time_w-#wea_d.bmp_width-17" y="#small_time_hour_h" srcExp="'time/small_time_'+ifelse(#isSubZero,ifelse(eq(len(@weather_temperature),3),substr(@weather_temperature,2,1),substr(@weather_temperature,1,1)),ifelse(eq(len(@weather_temperature),2),substr(@weather_temperature,1,1),substr(@weather_temperature,0,1)))+'.png'"/>
+		
+		<Image name="degree_t_1"  alignV="center" x="#big_time_w-#wea_d.bmp_width-#degree_t_2.bmp_width-17" y="#small_time_hour_h" srcExp="'time/small_time_'+ifelse(#isSubZero,ifelse(eq(len(@weather_temperature),3),substr(@weather_temperature,1,1),'useless'),ifelse(eq(len(@weather_temperature),2),substr(@weather_temperature,0,1),'useless'))+'.png'"/>
+		
+		<Image name="subzero" alignV="center" x="#big_time_w-#wea_d.bmp_width-#degree_t_2.bmp_width-#degree_t_1.bmp_width-ifelse(#isSubZero,10,0)" y="#small_time_hour_h" visibility="#isSubZero" src="time/v6_widget_time_minus.png"/>
+		
+		<Image name="weather_icon"  alignV="center" x="#big_time_w-#wea_d.bmp_width-#degree_t_2.bmp_width-#degree_t_1.bmp_width-ifelse(#isSubZero,#subzero.bmp_width,0)-39" y="#small_time_hour_h" srcExp="'weather/weather_'+ifelse(eq(#icon_index,16)*(ge(#hour24,18)+le(#hour24,5)),17,#icon_index)+'.png'"/>	
+		
+		</Group>
+		
+		</Group>
+		</Group>	
+			<!--
+			<Text name="h_s" x="#time_pos_x+#hf_width" y="#time_pos_y" align="left" color="#time_color" size="#time_size" shadow="8|5|8|#2d000000" textExp="ifelse(eq(#hour,0)*eq(#time_format,0),12,#hour)" typeface="NeoSans-Light.otf"/>
+			<Image name="t_dot" x="#time_pos_x+#hf_width+#hs_width" y="#time_pos_y+130" align="left" alignV="bottom" src="time_dot.png"/>
+			<Text name="m_f" x="#time_pos_x+#hf_width+#hs_width+#dot_width" y="#time_pos_y" align="left" color="#time_color" size="#time_size" shadow="8|5|8|#2d000000" textExp="ifelse(digit(#minute ,2),digit(#minute ,2),0)" typeface="NeoSans-Light.otf"/>
+			<Text name="m_s" x="#time_pos_x+#hf_width+#hs_width+#dot_width+#mf_width" y="#time_pos_y" align="left" color="#time_color" size="#time_size" shadow="8|5|8|#2d000000" textExp="ifelse(digit(#minute ,1),digit(#minute ,1),0)" typeface="NeoSans-Light.otf"/>
+			
+			<DateTime name="mon" x="#datetime_margin_left" y="#time_pos_y+#time_size+20" color="#time_color" size="28" shadow="5|2|3|#4d000000" align="left" format="@month_day_format" typeface="Roboto-Light.ttf"/>
+
+			<DateTime name="lunar_calendar" x="(#screen_width-(#mon_width+#lunar_calendar_width))/2+#mon_width" y="320" color="#time_color" size="28" shadow="5|2|3|#4d000000" align="left" format="@chinese_calendar_format" visibility="@chinese_calendar_show"/>
+
+			<DateTime name="week" x="#datetime_margin_left+#mon.text_width+15" y="#time_pos_y+#time_size+20" color="#time_color" size="28"  shadow="5|2|3|#4d000000" format="EEEE" typeface="@week_typeface"/>
+
+		   <Text name="time_aside" visibility="eq(#time_format,0)" x="#week_pos_x +ifelse(@chinese_calendar_show,70,-30)" y="320+@week_offsetY" color="#time_color" size="28" shadow="5|2|3|#4d000000" align="ifelse(@chinese_calendar_show,'center','left')" format="%s" typeface="@week_typeface" paras="@time_aside_str"/>
+			
+			<Group visibility="not(#music_control.visibility)*#showWeather">
+			<Var name="degree" expression="replace(@weather_temperature,'℃','')" type="string"/>
+			<Var name="icon_index" expression="ifelse(eq(#weather_type,18),3,eq(#weather_type,19),5, #weather_type)"/>
+			
+			<Image name="weather_icon" x="#datetime_margin_left" y="#time_pos_y+#time_size+20+28+20+5"   srcExp="'weather/weather_'+ #icon_index + '.png'"/>			 
+			
+			<Text name="degree_t" x="#datetime_margin_left+#weather_icon.bmp_width+10" y="#time_pos_y+#time_size+20+28+20"  color="#time_color" size="28" shadow="5|2|3|#4d000000" format="%s" paras="@degree" typeface="NeoSans-Light.otf"/>
+		
+			<Image name="wea_d" x="#datetime_margin_left+#weather_icon.bmp_width+#degree_t.text_width+10" y="#time_pos_y+#time_size+20+28+20+5"  src="weather/d.png" />	
+			
+			<Text name="city_text" x="#datetime_margin_left+#weather_icon.bmp_width+#degree_t.text_width+10+#wea_d.bmp_width+12"  y="#time_pos_y+#time_size+20+28+20"  color="#time_color" size="28" shadow="5|2|3|#4d000000" textExp="@weather_city"/>
+		</Group>
+		-->
+		</Group>
+		<!--天气
+		<Group name="weather" visibility="not(#music_control.visibility)*gt(#hasWeather,0)*eq(#miss_call,0)*eq(#sms_unread,0)">
+			<Var name="icon_index" expression="ifelse(eq(#weather_type,18),3,eq(#weather_type,19),5, #weather_type)"/>
+			<Image x="#screen_width/2" y="408+78" align="center" alignV="top" srcExp="'weather/weather_'+ #icon_index + '.png'"/>
+			<Var name="dtw" expression="#degree_t.text_width"/>
+			<Var name="dt_posX" expression="int((#screen_width-#dtw-16)/2)+8" type="number"/>
+			<Text name="degree_t" x="#dt_posX" y="408+78+60" align="left" color="#time_color" size="44" shadow="5|2|3|#4d000000" format="%s" paras="@degree" typeface="NeoSans-Light.otf"/>
+			<Image name="wea_d" x="#dt_posX+#dtw" y="408+78+70" src="weather/d.png" align="left"/>
+			<Text name="city_text" x="#screen_width/2" y="408+78+120" align="center" color="#time_color" size="28" shadow="5|2|3|#4d000000" textExp="@weather_city"/>
+		</Group>-->
+		<!--未接电话短信个数
+		<Group name="miss_call_mess" visibility="gt(#sms_unread,0)+gt(#miss_call,0)">
+			<Text name="call_text" x="#screen_middle-80" y="#unlock_view_startY-40" align="left" color="#time_color" size="28" shadow="5|2|3|#4d000000" textExp="ifelse(le(#miss_call,99),#miss_call,'99+')+@missCALL" visibility="gt(#miss_call,0)"/>
+			<Text name="mess_text" x="#screen_middle-80" y="#unlock_view_startY" align="left" color="#time_color" size="28" shadow="5|2|3|#4d000000" textExp="ifelse(le(#sms_unread,99),#sms_unread,'99+')+@unreadSMS" visibility="gt(#sms_unread,0)"/>
+		</Group>-->
+		<Button x="#screen_width/2-100" y="#unlock_view_centerY-#screen_height*80/1280" w="200" h="200">
+			<Triggers>
+				<Trigger action="double" target="music_control" property="visibility" value="toggle">
+			</Trigger>
+			</Triggers>
+		</Button>
+		<Var name="guid_tips_alpha_show">
+			<VariableAnimation>
+				<AniFrame value="0" time="0"/>
+				<AniFrame value="179" time="1000"/>
+				<AniFrame value="179" time="100000000000"/>
+			</VariableAnimation>
+		</Var>
+		<Var name="guid_tips_alpha_miss">
+			<VariableAnimation>
+				<AniFrame value="179" time="0"/>
+				<AniFrame value="0" time="1000"/>
+				<AniFrame value="0" time="100000000000"/>
+			</VariableAnimation>
+		</Var>
+		<Group alpha="ifelse(#lock_state_normal,#guid_tips_alpha_miss,#guid_tips_alpha_show)-(#lock_offsetY+#call_offsetY+#mess_offsetY)">
+		<Text name="call_tips" x="118" align="center" y="#tipContentY" format="%s" paras="@slide_down_call" color="#ffffff" size="24" shadow="0|0|6|#bf000000" visibility="ne(#unlocker_call.state,0)" />
+		<Text name="mess_tips" x="602" align="center" y="#tipContentY" format="%s" paras="@slide_down_mess" color="#ffffff" size="24" shadow="0|0|6|#bf000000" visibility="ne(#unlocker_mess.state,0)" />
+	</Group>
+	
+		<Var name="tipContentY" expression="#unlock_view_startY -#screen_height*30/1280"/>
+		<Var name="tipContentY2" expression="#unlock_view_startY -#screen_height*50/1280"/>
+		
+    <Group alpha="ifelse(#lock_state_normal,0,179)+ifelse(#lock_offsetY,#lock_offsetY,-1.3*#lock_offsetY)))">
+        <Text name="camera_tips" x="#screen_width/2" align="center" y="#tipContentY2" format="%s" paras="@slide_up_camera" color="#ffffff" size="24" shadow="0|0|6|#bf000000" visibility="ne(#unlocker_lock.state,0)" multiLine= "true" />
+        <Text name="unlock_tips" x="#screen_width/2" align="center" y="#tipContentY2" format="%s" paras="@slide_down_lock" color="#ffffff" size="24" shadow="0|0|6|#bf000000" visibility="ne(#unlocker_lock.state,0)" multiLine= "true" />
+    </Group>
+    
+		<Group name="lock_part">
+			<Var name="unlocker_pos_centerY" expression="#unlock_view_centerY"/>
+			<Var name="lock_offsetY" expression="ifelse(lt(#unlocker_lock.move_y,-150),-150-((#unlocker_lock.move_y+150)*40/#unlocker_lock.move_y),#unlocker_lock.move_y)"/>
+			<Var name="call_offsetY" expression="ifelse(lt(#unlocker_call.move_y,-20),-20-((#unlocker_call.move_y+20)*40/#unlocker_call.move_y),#unlocker_call.move_y)"/>
+			<Var name="mess_offsetY" expression="ifelse(lt(#unlocker_mess.move_y,-20),-20-((#unlocker_mess.move_y+20)*40/#unlocker_mess.move_y),#unlocker_mess.move_y)"/>
+			<Var name="line_ani_move_x">
+				<VariableAnimation>
+					<AniFrame value="0" time="0"/>
+					<AniFrame value="720" time="6000"/>
+				</VariableAnimation>
+			</Var>
+			<Group name="lines" alpha="ifelse(#lock_state_normal,#guide_show,#guide_miss)">
+				<Image name="line_1_norm_0" x="#line_ani_move_x" y="#unlocker_pos_centerY" alignV="center" srcExp="'line_1'+ifelse(gt(#battery_state,0)*ne(#battery_state,2),'_charge','')+'.png'"/>
+				<Image name="line_1_norm_1" x="-#line_1_norm_0.bmp_width+#line_ani_move_x" y="#unlocker_pos_centerY" alignV="center" srcExp="'line_1'+ifelse(gt(#battery_state,0)*ne(#battery_state,2),'_charge','')+'.png'"/>
+				<Image name="line_2_norm_0" x="#line_ani_move_x" y="#unlocker_pos_centerY" alignV="center" srcExp="'line_2'+ifelse(gt(#battery_state,0)*ne(#battery_state,2),'_charge','')+'.png'"/>
+				<Image name="line_2_norm_1" x="-#line_2_norm_0.bmp_width+#line_ani_move_x" y="#unlocker_pos_centerY" alignV="center" srcExp="'line_2'+ifelse(gt(#battery_state,0)*ne(#battery_state,2),'_charge','')+'.png'"/>
+				<Image name="line_3_norm_0" x="#line_ani_move_x" y="#unlocker_pos_centerY" alignV="center" srcExp="'line_3'+ifelse(gt(#battery_state,0)*ne(#battery_state,2),'_charge','')+'.png'"/>
+				<Image name="line_3_norm_1" x="-#line_3_norm_0.bmp_width+#line_ani_move_x" y="#unlocker_pos_centerY" alignV="center" srcExp="'line_3'+ifelse(gt(#battery_state,0)*ne(#battery_state,2),'_charge','')+'.png'"/>
+			</Group>
+			<!--充电光-->
+			<Group name="charging_light" alpha="ifelse(#lock_state_normal,#guide_show,#guide_miss)" visibility="#battery_state*ne(#battery_state,2)">
+				<Var name="battery_w" expression="#battery_level*#screen_width/100" type="number"/>
+				<Var name="granduent_width" expression="ifelse(le(#battery_level,87),92,92*(100-#battery_level)/13)" type="number"/>
+				<Var name="charging_light_width" expression="#battery_w-#granduent_width" type="number"/>
+				<Image x="0" y="#unlocker_pos_centerY" align="left" alignV="center" src="light.png" w="#charging_light_width">
+					<Mask x="-720+#line_ani_move_x" y="#unlocker_pos_centerY-55-12" align="absolute" src="line_1_mask.png"/>
+				</Image>
+				<Image x="0+#charging_light_width" y="#unlocker_pos_centerY" align="left" alignV="center" src="light_graduent.png" w="#granduent_width">
+					<Mask x="-720+#line_ani_move_x" y="#unlocker_pos_centerY-55-12" align="absolute" src="line_1_mask.png"/>
+				</Image>
+				<Image x="0" y="#unlocker_pos_centerY" align="left" alignV="center" src="light.png" w="#charging_light_width">
+					<Mask x="-720+#line_ani_move_x" y="#unlocker_pos_centerY-55-12" align="absolute" src="line_2_mask.png"/>
+				</Image>
+				<Image x="0+#charging_light_width" y="#unlocker_pos_centerY" align="left" alignV="center" src="light_graduent.png" w="#granduent_width">
+					<Mask x="-720+#line_ani_move_x" y="#unlocker_pos_centerY-55-12" align="absolute" src="line_2_mask.png"/>
+				</Image>
+				<Image x="0" y="#unlocker_pos_centerY" align="left" alignV="center" src="light.png" w="#charging_light_width">
+					<Mask x="-720+#line_ani_move_x" y="#unlocker_pos_centerY-55-12" align="absolute" src="line_3_mask.png"/>
+				</Image>
+				<Image x="0+#charging_light_width" y="#unlocker_pos_centerY" align="left" alignV="center" src="light_graduent.png" w="#granduent_width">
+					<Mask x="-720+#line_ani_move_x" y="#unlocker_pos_centerY-55-12" align="absolute" src="line_3_mask.png"/>
+				</Image>
+			</Group>
+			<Var name="lock_image_size_n">
+				<VariableAnimation>
+					<AniFrame value="#img_normal_lock.bmp_width*1.25" time="0"/>
+					<AniFrame value="#img_normal_lock.bmp_width" time="100"/>
+					<AniFrame value="#img_normal_lock.bmp_width" time="1000000000000"/>
+				</VariableAnimation>
+			</Var>
+			<Var name="call_image_size_n">
+				<VariableAnimation>
+					<AniFrame value="#img_normal_call.bmp_width*1.25" time="0"/>
+					<AniFrame value="#img_normal_call.bmp_width" time="100"/>
+					<AniFrame value="#img_normal_call.bmp_width" time="1000000000000"/>
+				</VariableAnimation>
+			</Var>
+			<Var name="mess_image_size_n">
+				<VariableAnimation>
+					<AniFrame value="#img_normal_mess.bmp_width*1.25" time="0"/>
+					<AniFrame value="#img_normal_mess.bmp_width" time="100"/>
+					<AniFrame value="#img_normal_mess.bmp_width" time="1000000000000"/>
+				</VariableAnimation>
+			</Var>
+			
+			<!--未读短信、未读电话坐标-->
+			<Var name="lock_n_con" expression="eq(#unlocker_call.state,0)*eq(#unlocker_lock.state,0)*eq(#unlocker_mess.state,0)"/>
+			<Var name="mm_x_1" expression="#screen_width-119+40"/>
+			<Var name="mm_x_2" expression="#screen_width-119+40"/>
+			<Var name="mm_x_3" expression="#screen_width-119+40"/>
+			<Var name="mm_x_4" expression="#screen_width-119+45"/>
+			<Var name="mm_y_1" expression="#unlocker_pos_centerY-30+#lock_offsetY*0.3+#lock_backY_N*0.3"/>
+			<Var name="mm_y_2" expression="#unlocker_pos_centerY+#mess_offsetY-30+#lock_offsetY*0.5+#lock_backY*0.5"/>
+			<Var name="mm_y_3" expression="#unlocker_pos_centerY+#mess_offsetY-30+#call_offsetY*0.3+#lock_backY*0.3"/>
+			<Var name="mm_y_4" expression="#unlocker_pos_centerY-35+#mess_offsetY"/>
+			<Var name="mc_x_1" expression="119-40"/>
+			<Var name="mc_x_2" expression="119-40"/>
+			<Var name="mc_x_3" expression="119-40-5"/>
+			<Var name="mc_x_4" expression="119-40"/>
+			<Var name="mc_y_1" expression="#unlocker_pos_centerY-30+#lock_offsetY*0.3+#lock_backY_N*0.3"/>
+			<Var name="mc_y_2" expression="#unlocker_pos_centerY-30+#lock_offsetY*0.5+#lock_backY*0.5"/>
+			<Var name="mc_y_3" expression="#unlocker_pos_centerY-35+#call_offsetY"/>
+			<Var name="mc_y_4" expression="#unlocker_pos_centerY-30+#mess_offsetY*0.3+#lock_backY*0.3"/>
+			<Var name="mc_x" expression="ifelse(#lock_n_con,#mc_x_1,ne(#unlocker_lock.state,0),#mc_x_2,ne(#unlocker_call.state,0),#mc_x_3,ne(#unlocker_mess.state,0),#mc_x_4,0)"/>
+			<Var name="mc_y" expression="ifelse(#lock_n_con,#mc_y_1,ne(#unlocker_lock.state,0),#mc_y_2,ne(#unlocker_call.state,0),#mc_y_3,ne(#unlocker_mess.state,0),#mc_y_4,0)"/>
+			<Var name="mm_x" expression="ifelse(#lock_n_con,#mm_x_1,ne(#unlocker_lock.state,0),#mm_x_2,ne(#unlocker_call.state,0),#mm_x_3,ne(#unlocker_mess.state,0),#mm_x_4,0)"/>
+			<Var name="mm_y" expression="ifelse(#lock_n_con,#mm_y_1,ne(#unlocker_lock.state,0),#mm_y_2,ne(#unlocker_call.state,0),#mm_y_3,ne(#unlocker_mess.state,0),#mm_y_4,0)"/>
+			<Group name="lock_normal" visibility="#lock_n_con">
+				<Var name="paline_vi" expression="0" const="true"/>
+				<Var name="lock_backY_N">
+					<VariableAnimation>
+						<AniFrame value="#lock_backN_init" time="0"/>
+						<AniFrame value="-12" time="100"/>
+						<AniFrame value="0" time="130"/>
+						<AniFrame value="15" time="160"/>
+						<AniFrame value="0" time="190"/>
+						<AniFrame value="-9" time="210"/>
+						<AniFrame value="0" time="230"/>
+						<AniFrame value="12" time="250"/>
+						<AniFrame value="0" time="270"/>
+						<AniFrame value="-6" time="280"/>
+						<AniFrame value="0" time="290"/>
+						<AniFrame value="9" time="300"/>
+						<AniFrame value="0" time="310"/>
+						<AniFrame value="0" time="10000000000000"/>
+					</VariableAnimation>
+				</Var>
+				<Path name="paline" type="quad" style="stroke" width="3" color="#4dFFFFFF" fromX="0" fromY="#unlocker_pos_centerY" moveX="#screen_width/2" moveY="#unlocker_pos_centerY+(#lock_offsetY+#lock_backY_N)*1.8" toX="#screen_width" toY="#unlocker_pos_centerY" visibility="#paline_vi" alpha="255*0.2">
+					<AlphaAnimation>
+						<Alpha a="255*0.2" time="0"/>
+						<Alpha a="255*0.2" time="450"/>
+						<Alpha a="100" time="500"/>
+						<Alpha a="0" time="600"/>
+						<Alpha a="0" time="100000000000"/>
+					</AlphaAnimation>
+				</Path>
+				<Image name="img_normal_lock" x="#screen_width/2" y="#unlocker_pos_centerY+#lock_offsetY+#lock_backY_N" align="center" alignV="center" srcExp="ifelse(gt(#battery_state,0)*ne(#battery_state,2),'unlocker_charging','unlocker')+'.png'" w="#lock_image_size_n" h="#lock_image_size_n">
+				</Image>
+				<Text x="#screen_width/2" y="#unlocker_pos_centerY+#lock_offsetY+#lock_backY_N-11" align="center" alignV="center" color="#15ff0f" size="54" typeface="NeoSans-Light.otf" format="%d" paras="#battery_level" visibility="#battery_state*ne(#battery_state,2)">
+				</Text>
+				<Image name="img_normal_call" x="119" y="#unlocker_pos_centerY+#lock_offsetY*0.3+#lock_backY_N*0.3" align="center" alignV="center" src="unlocker_call.png" w="#call_image_size_n" h="#call_image_size_n">
+				</Image>
+				<Image name="img_normal_mess" x="#screen_width-119" y="#unlocker_pos_centerY+#lock_offsetY*0.3+#lock_backY_N*0.3" align="center" alignV="center" src="unlocker_mess.png" w="#mess_image_size_n" h="#mess_image_size_n">
+				</Image>
+			</Group>
+			
+			<Group name="lock_pressed">
+				<Var name="lock_back_init" expression="0" type="number" const="true"/>
+				<Var name="lock_backY">
+					<VariableAnimation>
+						<AniFrame value="0" time="0"/>
+						<AniFrame value="#lock_back_init-12" time="200"/>
+						<AniFrame value="#lock_back_init" time="230"/>
+						<AniFrame value="#lock_back_init+20" time="260"/>
+						<AniFrame value="#lock_back_init" time="290"/>
+						<AniFrame value="#lock_back_init-9" time="310"/>
+						<AniFrame value="#lock_back_init" time="330"/>
+						<AniFrame value="#lock_back_init+15" time="350"/>
+						<AniFrame value="#lock_back_init" time="370"/>
+						<AniFrame value="#lock_back_init-6" time="380"/>
+						<AniFrame value="#lock_back_init" time="390"/>
+						<AniFrame value="#lock_back_init+10" time="400"/>
+						<AniFrame value="#lock_back_init" time="410"/>
+						<AniFrame value="#lock_back_init" time="10000000000000"/>
+					</VariableAnimation>
+				</Var>
+				
+				<Group name="lock_press" visibility="ne(#unlocker_lock.state,0)">
+					<Var name="lock_image_size">
+						<VariableAnimation>
+							<AniFrame value="#img_normal_lock.bmp_width" time="0"/>
+							<AniFrame value="#img_normal_lock.bmp_width*1.25" time="200"/>
+							<AniFrame value="#img_normal_lock.bmp_width*1.25" time="1000000000000"/>
+						</VariableAnimation>
+					</Var>
+					<Path type="quad" style="stroke" width="3" color="#4dFFFFFF" fromX="0" fromY="#unlocker_pos_centerY" moveX="#screen_width/2" moveY="#unlocker_pos_centerY+#lock_offsetY*1.8+#lock_backY*1.8" toX="#screen_width" toY="#unlocker_pos_centerY" alpha="255*0.2" shadow="true"/>
+					<Image name="img_normal_call" x="119" y="#unlocker_pos_centerY+#lock_offsetY*0.5+#lock_backY*0.5" align="center" alignV="center" src="unlocker_call.png"/>
+					<Image x="#screen_width/2" y="#unlocker_pos_centerY+#lock_offsetY" w="#lock_image_size" h="#lock_image_size" align="center" alignV="center" src="unlocker_pressed.png" alpha="#locker_dissmis"/>
+					<Image name="img_normal_mess" x="#screen_width-119" y="#unlocker_pos_centerY+#lock_offsetY*0.5+#lock_backY*0.5" align="center" alignV="center" src="unlocker_mess.png"/>
+				</Group>
+				
+				<Group name="call_press" visibility="ne(#unlocker_call.state,0)">
+					<Var name="call_image_size">
+						<VariableAnimation>
+							<AniFrame value="#img_normal_call.bmp_width" time="0"/>
+							<AniFrame value="#img_normal_call.bmp_width*1.25" time="200"/>
+							<AniFrame value="#img_normal_call.bmp_width*1.25" time="1000000000000"/>
+						</VariableAnimation>
+					</Var>
+					<Path type="quad" style="stroke" width="3" color="#4dFFFFFF" fromX="0" fromY="#unlocker_pos_centerY" moveX="30" moveY="#unlocker_pos_centerY+#call_offsetY*2+#lock_backY*2" toX="#screen_width" toY="#unlocker_pos_centerY" alpha="255*0.2" shadow="true"/>
+					<Image x="119" y="#unlocker_pos_centerY+#call_offsetY" w="#call_image_size" h="#call_image_size" align="center" alignV="center" src="unlocker_call_pressed.png" alpha="#caller_dissmis"/>
+					<Image name="img_normal_lock" x="#screen_width/2" y="#unlocker_pos_centerY+#call_offsetY*0.9+#lock_backY*0.9" align="center" alignV="center" srcExp="ifelse(gt(#battery_state,0)*ne(#battery_state,2),'unlocker_charging','unlocker')+'.png'"/>
+					<Text name="bl_show" x="#screen_width/2" y="#unlocker_pos_centerY+#lock_offsetY-11+#call_offsetY*0.9+#lock_backY*0.9" align="center" alignV="center" color="#15ff0f" size="54" typeface="NeoSans-Light.otf" format="%d" paras="#battery_level" visibility="#battery_state*ne(#battery_state,2)"/>
+					<Image name="img_normal_mess" x="#screen_width-119" y="#unlocker_pos_centerY+#call_offsetY*0.3+#lock_backY*0.3" align="center" alignV="center" src="unlocker_mess.png"/>
+				</Group>
+				
+				<Group name="mess_press" visibility="ne(#unlocker_mess.state,0)">
+					<Var name="mess_image_size">
+						<VariableAnimation>
+							<AniFrame value="#img_normal_mess.bmp_width" time="0"/>
+							<AniFrame value="#img_normal_mess.bmp_width*1.25" time="200"/>
+							<AniFrame value="#img_normal_mess.bmp_width*1.25" time="1000000000000"/>
+						</VariableAnimation>
+					</Var>
+					<Path type="quad" style="stroke" width="3" color="#4dFFFFFF" fromX="0" fromY="#unlocker_pos_centerY" moveX="#screen_width-30" moveY="#unlocker_pos_centerY+#mess_offsetY*2+#lock_backY*2" toX="#screen_width" toY="#unlocker_pos_centerY" alpha="255*0.2" shadow="true"/>
+					<Image x="#screen_width-119" y="#unlocker_pos_centerY+#mess_offsetY" w="#mess_image_size" h="#mess_image_size" align="center" alignV="center" src="unlocker_pressed_mess.png" alpha="#messer_dissmis"/>
+					<Image name="img_normal_lock" x="#screen_width/2" y="#unlocker_pos_centerY+#mess_offsetY*0.9+#lock_backY*0.9" align="center" alignV="center" srcExp="ifelse(gt(#battery_state,0)*ne(#battery_state,2),'unlocker_charging','unlocker')+'.png'"/>
+					<Text name="bl_show1" x="#screen_width/2" y="#unlocker_pos_centerY+#lock_offsetY-11+#mess_offsetY*0.9+#lock_backY*0.9" align="center" alignV="center" color="#15ff0f" size="54" typeface="NeoSans-Light.otf" format="%d" paras="#battery_level" visibility="#battery_state*ne(#battery_state,2)"/>
+					<Image name="img_normal_call" x="119" y="#unlocker_pos_centerY+#mess_offsetY*0.3+#lock_backY*0.3" align="center" alignV="center" src="unlocker_call.png"/>
+				</Group>
+				<!--srcExp="ifelse(gt(#miss_call,99),'msg_hint_bg','msg_hint_bg_s')+'.png'"-->
+				<Group name="sms_unread_count" visibility="eq(#isOpenListMsg,1)">
+					<Group name="miss_mess_normal" x="#mm_x" y="#mm_y" visibility="gt(#sms_unread,0)">
+						<Image x="0" y="0" align="center" alignV="center"  srcExp="ifelse(gt(#miss_call,99),'msg_hint_bg','msg_hint_bg_s')+'.png'"/>
+						<Text x="0" y="-3" align="center" alignV="center" color="#ffffff" shadow="1|1|1|#bf000000" size="26" textExp="ifelse(le(#sms_unread,99),#sms_unread,'99+')"/>
+					</Group>
+					<Group name="miss_call_normal" x="#mc_x" y="#mc_y" visibility="gt(#miss_call,0)">
+						<Image x="0" y="0" align="center" alignV="center" srcExp="ifelse(gt(#miss_call,99),'msg_hint_bg','msg_hint_bg_s')+'.png'"/>
+						<Text x="0" y="-3" align="center" alignV="center" color="#ffffff" shadow="1|1|1|#bf000000" size="26" textExp="ifelse(le(#miss_call,99),#miss_call,'99+')"/>
+					</Group>
+				</Group>
+			</Group>
+		</Group>
+		
+		<!--引导动画-->
+		<Group name="guide">
+			<Var name="guide_show">
+				<VariableAnimation>
+					<AniFrame value="#guide_miss" time="0"/>
+					<AniFrame value="180" time="500"/>
+					<AniFrame value="180" time="100000000000"/>
+				</VariableAnimation>
+			</Var>
+			<Var name="guide_miss">
+				<VariableAnimation>
+					<AniFrame value="#guide_show" time="0"/>
+					<AniFrame value="0" time="500"/>
+					<AniFrame value="0" time="100000000000"/>
+				</VariableAnimation>
+			</Var>
+			<Var name="isreached_to_pressed" expression="1" const="true"/>
+			<Var name="lock_state_pressed" expression="eq(#unlocker_lock.state,1)+eq(#unlocker_call.state,1)+eq(#unlocker_mess.state,1)"/>
+			<Var name="lock_state_normal" expression="eq(#unlocker_lock.state,0)*eq(#unlocker_call.state,0)*eq(#unlocker_mess.state,0)"/>
+			<Var name="lockstate" expression="#unlocker_lock.state+#unlocker_call.state+#unlocker_mess.state"/>
+			<Var name="guide_ani_trigger" expression="#lockstate" threshold="1">
+				<Trigger>
+					<Command target="unlock_tips.visibility" value="true" condition="#lock_state_pressed"/>
+					<Command target="camera_tips.visibility" value="true" condition="#lock_state_pressed"/>
+					<Command target="guid_tips_alpha_show.animation" value="play" condition="#lock_state_pressed"/>
+					<Command target="guid_tips_alpha_miss.animation" value="play" condition="#lock_state_normal"/>
+					<Command target="guide_show.animation" value="play" condition="eq(#lock_state_normal,1)"/>
+					<VariableCommand name="isreached_to_pressed" expression="0" const="true" condition="eq(#lockstate,2)"/>
+					<VariableCommand name="isreached_to_pressed" expression="1" const="true" condition="eq(#lockstate,0)"/>
+					<Command target="guide_miss.animation" value="play" condition="#lock_state_pressed*#isreached_to_pressed"/>
+				</Trigger>
+			</Var>
+			<Image x="#screen_width/2" y="#screen_height-180+#virtual_pan_height" align="center" alignV="top" src="guide_bg.png" alpha="ifelse(#lock_state_normal,#guide_show,#guide_miss)"/>
+			<Image x="#screen_width/2" y="#screen_height-210+#virtual_pan_height" align="center" src="guide_light.png" alpha="ifelse(#lock_state_normal,#guide_show,#guide_miss)">
+				<PositionAnimation>
+					<Position x="0" y="0" time="0"/>
+					<Position x="0" y="120" time="1000"/>
+					<Position x="0" y="120" time="1500"/>
+				</PositionAnimation>
+				<Mask x="#screen_width/2-8" y="#screen_height-235+#virtual_pan_height" src="guide_mask.png" align="absolute"/>
+			</Image>
+		</Group>
+	</VirtualScreen>
+
+	<Var name="screen_middle" expression="#screen_width/2" type="number" const="true"/>
+
+	<!-- <Var name="testVar" expression="0" const="true" /> -->
+	<Var name="touch_endY_up" expression="ifelse(#touch_state*gt(#touch_y,(#screen_height-460)),1,0)" threshold="1">
+			<Trigger>
+				<VariableCommand name="root_virtualscreen.freeze" expression="0" />
+				<!-- <VariableCommand name="testVar" expression="1" const="true" /> -->
+				<VariableCommand name="touch_state" expression="0" const="true"/>
+			</Trigger>
+	</Var>
+
+	<Var name="press_back" expression="1" const="true"/>
+	<Var name="lock_back" expression="#press_back" threshold="1">
+		<Trigger>
+			<Command target="lock_backY_N.animation" value="play" condition="eq(#press_back,1)"/>
+			<VariableCommand name="paline_vi" expression="1" condition="eq(#press_back,1)"/>
+			<Command target="paline.animation" value="play" condition="eq(#press_back,1)"/>
+		</Trigger>
+	</Var>
+	<Var name="locker_dissmis_init" expression="255" const="true"/>
+	<Var name="locker_dissmis_end" expression="255" const="true"/>
+	<Var name="locker_dissmis" >
+		<VariableAnimation>
+			<AniFrame value="#locker_dissmis_init" time="0"/>
+			<AniFrame value="#locker_dissmis_end" time="300"/>
+			<AniFrame value="#locker_dissmis_end" time="100000000000"/>
+		</VariableAnimation>
+	</Var>
+	<!--滑动解锁-->
+	<Unlocker name="unlocker_lock" delay="150">
+		<StartPoint x="#screen_width/2-100" y="#unlock_view_startY" w="200" h="200">
+			<NormalState>
+				<Trigger>
+					<VariableCommand name="press_back" expression="1" const="true"/>
+					<Command target="lock_image_size_n.animation" value="play"/>
+				</Trigger>
+			</NormalState>
+			<PressedState>
+				<Trigger>
+					<Command target="lock_image_size.animation" value="play"/>
+					<VariableCommand name="touch_state" expression="0" const="true"/>
+					<VariableCommand name="press_back" expression="0" const="true"/>
+					<VariableCommand name="lock_backN_init" expression="#lock_offsetY" type="number" const="true"/>
+				</Trigger>
+			</PressedState>
+			<ReachedState>
+				<Trigger action="up">
+					<VariableCommand name="lock_back_init" expression="-#lock_offsetY" type="number" const="true"/>
+					<Command target="lock_backY.animation" value="play"/> 
+					<VariableCommand name="locker_dissmis_init" expression="255" type="number" const="true"/>
+					<VariableCommand name="locker_dissmis_end" expression="0" type="number"  const="true"/>
+				   <Command target="locker_dissmis.animation" value="play"/> 
+				</Trigger>
+			</ReachedState>
+		</StartPoint>
+		<EndPoint x="-200" y="#screen_height*1100/1280" w="920" h="400"/>
+		<EndPoint  x="-300" y="#unlock_view_centerY-#screen_height*800/1280" w="920" h="#screen_height*500/1280">
+		    <Intent action="lewa.media.action.STILL_IMAGE_CAMERA"  category="android.intent.category.DEFAULT"/> 
+            <Intent action="android.media.action.STILL_IMAGE_CAMERA"  category="android.intent.category.DEFAULT"/>
+       </EndPoint>
+	</Unlocker>
+	
+	<Var name="press_back_1" expression="1" const="true"/>
+	<Var name="lock_back_1" expression="#press_back_1" threshold="1">
+		<Trigger>
+			<Command target="lock_backY_N.animation" value="play" condition="eq(#press_back_1,1)"/>
+			<VariableCommand name="paline_vi" expression="1" condition="eq(#press_back_1,1)"/>
+			<Command target="paline.animation" value="play" condition="eq(#press_back_1,1)"/>
+		</Trigger>
+	</Var>
+
+	<Var name="caller_dissmis_init" expression="255" const="true"/>
+	<Var name="caller_dissmis_end" expression="255" const="true"/>
+	<Var name="caller_dissmis" >
+		<VariableAnimation>
+			<AniFrame value="#caller_dissmis_init" time="0"/>
+			<AniFrame value="#caller_dissmis_end" time="300"/>
+			<AniFrame value="#caller_dissmis_end" time="100000000000"/>
+		</VariableAnimation>
+	</Var>
+	<!--电话解锁-->
+	<Unlocker name="unlocker_call" delay="500">
+		<StartPoint x="119-100" y="#unlock_view_startY" w="200" h="200">
+			<NormalState>
+				<Trigger>
+					<VariableCommand name="press_back_1" expression="1" const="true"/>
+					<Command target="call_image_size_n.animation" value="play"/>
+				</Trigger>
+			</NormalState>
+			<PressedState>
+			
+				<Triggers>
+				<Trigger action="down">
+					<Command target="call_image_size.animation" value="play"/>
+					<VariableCommand name="touch_state" expression="0" const="true"/>
+					<VariableCommand name="press_back_1" expression="0" const="true"/>
+					<VariableCommand name="lock_backN_init" expression="#call_offsetY" type="number" const="true"/>
+				</Trigger>
+				
+				<Trigger action="up">
+					<Command target="call_image_size.animation" value="play"/>
+					<VariableCommand name="touch_state" expression="0" const="true"/>
+					<VariableCommand name="press_back_1" expression="0" const="true"/>
+					<VariableCommand name="lock_backN_init" expression="#call_offsetY" type="number" const="true"/>					
+				</Trigger>	
+				
+				</Triggers>
+				
+			</PressedState>
+			<ReachedState>
+				<Trigger action="up">
+					<VariableCommand name="lock_back_init" expression="-#call_offsetY" type="number" const="true"/>
+					<Command target="lock_backY.animation" value="play"/>
+					<VariableCommand name="caller_dissmis_init" expression="255" type="number" const="true"/>
+					<VariableCommand name="caller_dissmis_end" expression="0" type="number"  const="true"/>
+					<Command target="caller_dissmis.animation" value="play"/>
+				</Trigger>
+			</ReachedState>
+		</StartPoint>
+		<EndPoint x="-200" y="#screen_height*1100/1280" w="920" h="400">
+		     <!-- <Trigger>
+				<IntentCommand action="android.intent.action.VIEW" type="vnd.android.cursor.dir/calls" category="android.intent.category.DEFAULT"/>
+			</Trigger> -->
+			<Intent action="android.intent.action.VIEW" type="vnd.android.cursor.dir/calls" category="android.intent.category.DEFAULT"/> 
+		</EndPoint>
+	</Unlocker>
+	
+	<Var name="press_back_2" expression="1" const="true"/>
+	<Var name="lock_back_2" expression="#press_back_2" threshold="1">
+		<Trigger>
+			<Command target="lock_backY_N.animation" value="play" condition="eq(#press_back_2,1)"/>
+			<VariableCommand name="paline_vi" expression="1" condition="eq(#press_back_2,1)"/>
+			<Command target="paline.animation" value="play" condition="eq(#press_back_2,1)"/>
+		</Trigger>
+	</Var>
+
+	<Var name="messer_dissmis_init" expression="255" const="true"/>
+	<Var name="messer_dissmis_end" expression="255" const="true"/>
+	<Var name="messer_dissmis" >
+		<VariableAnimation>
+			<AniFrame value="#messer_dissmis_init" time="0"/>
+			<AniFrame value="#messer_dissmis_end" time="300"/>
+			<AniFrame value="#messer_dissmis_end" time="100000000000"/>
+		</VariableAnimation>
+	</Var>
+	<!--短信解锁-->
+	<Unlocker name="unlocker_mess" delay="500">
+		<StartPoint x="#screen_width-119-100" y="#unlock_view_startY" w="200" h="200">
+			<NormalState>
+				<Trigger>
+					<VariableCommand name="press_back_2" expression="1" const="true"/>
+					<Command target="mess_image_size_n.animation" value="play"/>
+				</Trigger>
+			</NormalState>
+			<PressedState>
+				<Trigger>
+					<Command target="mess_image_size.animation" value="play"/>
+					<VariableCommand name="touch_state" expression="0" const="true"/>
+					<VariableCommand name="press_back_2" expression="0" const="true"/>
+					<VariableCommand name="lock_backN_init" expression="#mess_offsetY" type="number" const="true"/>
+				</Trigger>
+			</PressedState>
+			<ReachedState>
+				<Trigger action="up">
+					<VariableCommand name="lock_back_init" expression="-#mess_offsetY" type="number" const="true"/>
+					<Command target="lock_backY.animation" value="play"/>
+					<VariableCommand name="messer_dissmis_init" expression="255" type="number" const="true"/>
+					<VariableCommand name="messer_dissmis_end" expression="0" type="number"  const="true"/>
+				    <Command target="messer_dissmis.animation" value="play"/>
+				</Trigger>
+			</ReachedState>
+		</StartPoint>
+		<EndPoint x="-200" y="#screen_height*1100/1280" w="920" h="400">
+			<!-- <Trigger>
+				<IntentCommand action="android.intent.action.MAIN" type="vnd.android-dir/mms-sms" category="android.intent.category.DEFAULT" condition="ne(#sms_unread,1)"/>
+				<IntentCommand action="com.lewa.intent.action.VIEW_PIM_DETAIL_MESSAGE" type="vnd.android-dir/mms-sms" category="android.intent.category.DEFAULT" condition="eq(#sms_unread,1)"/>
+			</Trigger> -->
+			<Intent action="android.intent.action.MAIN" type="vnd.android-dir/mms-sms" category="android.intent.category.DEFAULT" condition="ne(#sms_unread,1)"/>
+		    <Intent action="com.lewa.intent.action.VIEW_PIM_DETAIL_MESSAGE" type="vnd.android-dir/mms-sms" category="android.intent.category.DEFAULT" condition="eq(#sms_unread,1)"/>
+		</EndPoint>
+	</Unlocker>
+	
+	<Group name="list_msgs" visibility="eq(#isOpenListMsg,0)*not(#music_control.visibility) "> <!-- * ifelse(#lock_state_normal,1,0) -->
+
+	<Var name="datetime_alpha" expression="153" const="true" />
+	<Var name="list_item_hight" expression="140" const="true" />
+	<Var name="list_start_pos" expression="#screen_height*420/1280" const="true" />
+	<Var name="virtual_pan_height" expression="0" const="true" />
+	<!--虚拟按键通常高度48dp 像素72px -->
+	
+	<Var name="list_height"  expression="#screen_height*(1280-380-420 +#virtual_pan_height-30)/1280"  const="true" />
+	<Var name="content_margin_left" expression="80" const="true" />
+	
+	<List name="lewa_list"  y="#list_start_pos" w="#screen_width" h="#list_height" maxHeight="#list_height" isMixedList="true" onItemHorizontalScroll="true"  >	
+	
+		<ListMask type="bottom" startColor="#ffffffff" endColor="#00ffffff"  angle="270" h="60" w ="1080"/>
+		
+		<MaxedItem name="sms_provider" data="address:string,body:string,date:string">
+		
+			<Click  enterResName="lewa_keyguard_slide_in_left" exitResName="lewa_keyguard_slide_out"  openExtra="address">
+				<Intent action="com.lewa.intent.action.VIEW_PIM_DETAIL_MESSAGE" type="vnd.android-dir/mms-sms" category="android.intent.category.DEFAULT" />
+				<Intent action="android.intent.action.MAIN" type="vnd.android-dir/mms-sms" category="android.intent.category.DEFAULT" />
+			</Click>
+			 
+			<AttrDataBinders>
+				<AttrDataBinder target="item_address" attr="text" data="address"/>
+				<AttrDataBinder target="item_body" attr="text" data="body" />
+				<AttrDataBinder target="item_date" attr="text" data="date" />
+			</AttrDataBinders>
+			
+			<Item height="#list_item_hight" w="#screen_width">
+				
+			     <Image  name="divider" x="0" y="#list_item_hight-1"  w="#screen_width" src="list_divider.png"  alignV="top"/>   
+                 <Rectangle  name="highlight" height="#list_item_hight" w="#screen_width" fillColor="#000000"   alpha="255*0.2" visable="false"/>
+			     <Group name="group" height="#list_item_hight" w="#screen_width">
+					<Text alpha="#datetime_alpha+60" name="item_address" size="24"  x="#content_margin_left+48+18" y="18" width="300" color="#FFFFFF" alignV="top"/>
+				    <DateTime alpha="#datetime_alpha" name="item_date" size="24" x="#content_margin_left+48+450" y="18" color="#FFFFFF" format="kk:mm"  alignV="top"/>
+					<Text  name="item_body" size="28" x="#content_margin_left+48+18" y="18+24+16" color="#FFFFFFFF" alignV="top" w="500" multiLine="false" width="500" />
+					<Text alpha="#datetime_alpha" text="@tips_right_move" size="16" color="#FFFFFFFF"  x="#content_margin_left+48+18" y="18+24+16+28+16" alignV="top"/>
+					<Image  name="icon" x="#content_margin_left" y="18" h="48" w="48" src="preview_sms_icon.png" />
+                  </Group>
+                  
+			</Item>
+
+		</MaxedItem>
+
+		<MaxedItem name="call_provider" data="number:string,date:string,name:string">
+		
+			<Click  enterResName="lewa_keyguard_slide_in_left" exitResName="lewa_keyguard_slide_out" openExtra="number">
+				<Intent action="android.intent.action.VIEW" type="vnd.android.cursor.dir/calls" category="android.intent.category.DEFAULT"/> 
+			</Click>
+
+			<AttrDataBinders>
+				<AttrDataBinder target="item_address" attr="text" data="number"/>
+				<AttrDataBinder target="item_date" attr="text" data="date"/>
+				<AttrDataBinder target="call_name1" attr="text" data="name"/>
+			</AttrDataBinders>
+			
+			<Item height="#list_item_hight" w="#screen_width">
+			    <Image  name="divider" x="0" y="#list_item_hight-1"  w="#screen_width" src="list_divider.png"  alignV="top"/>
+                <Rectangle  name="highlight" height="#list_item_hight" w="#screen_width" fillColor="#000000"   alpha="255*0.2" visable="false"/>
+			    <Group name="group" height="#list_item_hight" w="#screen_width">
+					<Text alpha="#datetime_alpha+60" name="call_name1" size="24"  x="#content_margin_left+48+18" y="18" color="#FFFFFF" width="300" alignV="top"/>
+					<DateTime alpha="#datetime_alpha" name="item_date" size="24" x="#content_margin_left+48+450" y="18"  color="#FFFFFF" format="kk:mm"  alignV="top"/>
+					<Text  name="item_address" size="28" x="#content_margin_left+48+18" y="18+24+16" color="#FFFFFFFF" alignV="top" w="500" multiLine="false"/>
+					<Text alpha="#datetime_alpha" text="@tips_right_move" size="16" color="#FFFFFFFF"  x="#content_margin_left+48+18" y="18+24+16+28+16" alignV="top"/>
+					<Image  name="icon" x="#content_margin_left" y="18" h="48" w="48" src="preview_call_icon.png" />
+			     </Group>
+			</Item>
+		</MaxedItem>
+	</List>
+	</Group>
+	<!-- Test <Text x="300" y="300" textExp="#weather_type" size="30" color="#ff00ff"/>-->
+</Lockscreen>

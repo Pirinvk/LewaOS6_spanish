@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="Nsongs">
+        <item quantity="other">"Canciones: %d"</item>
+    </plurals>
+    <plurals name="Nsongscomp">
+        <item quantity="other">"%2$d de %1$d canciones"</item>
+    </plurals>
+    <plurals name="Nalbums">
+        <item quantity="other">"Album: %d"</item>
+        <item quantity="one">"1 álbum"</item>
+    </plurals>
+    <plurals name="NNNtrackstoplaylist">
+        <item quantity="other">"Añadido a la lista de reproducción de canciones: %d"</item>
+        <item quantity="one">"1 canción añade a lista de reproducción"</item>
+    </plurals>
+    <plurals name="NNNtracksdeleted">
+        <item quantity="other">"Canciones eliminados: %d"</item>
+        <item quantity="one">"1 canción eliminado"</item>
+    </plurals>
+    <plurals name="NNNsearchsong">
+        <item quantity="other">"Búsqueda %d canciones (ninguno)"</item>
+        <item quantity="one">"Buscar 1 canción"</item>
+    </plurals>
+    <plurals name="Nfolders">
+        <item quantity="other">"Carpetas: %d"</item>
+        <item quantity="one">"1 carpeta"</item>
+    </plurals>
+</resources>

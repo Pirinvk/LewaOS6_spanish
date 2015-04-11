@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="flashDevice">/sys/class/leds/flashlight/brightness</string>
+    <string name="app_name">Linterna</string>
+    <string name="prompt">Mantén HOME para encender la linterna en el modo bloqueo de pantalla.</string>
+    <string name="errorCameraOpenTitle">Error de Linterna</string>
+    <string name="errorCameraOpenMessage">"No se puede abrir la linterna ,no hay ninguna cámara o está en uso"</string>
+</resources>

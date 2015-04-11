@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="desktop_transition_effect_entries">
+        <item>"Estándar"</item>
+        <item>"Rebote"</item>
+        <item>"Rotación abajo"</item>
+        <item>"Golpe"</item>
+        <item>"Cubo interior"</item>
+        <item>"Cubo exterior"</item>
+        <item>"Acordeón"</item>
+        <item>"Carrusel"</item>
+    </string-array>
+
+
+
+
+
+
+
+
+
+
+    <string-array name="large_screen_layout">
+        <item>"4 * 4"</item>
+        <item>"4 * 5"</item>
+        <item>"4 * 6"</item>
+        <item>"5 * 5"</item>
+        <item>"5 * 6"</item>
+    </string-array>
+    <string-array name="large_screen_layout_value">
+        <item>"4|4"</item>
+        <item>"4|5"</item>
+        <item>"4|6"</item>
+        <item>"5|5"</item>
+        <item>"5|6"</item>
+    </string-array>
+    <string-array name="ex_large_screen_layout">
+        <item>"4 * 4"</item>
+        <item>"4 * 5"</item>
+        <item>"4 * 6"</item>
+        <item>"5 * 5"</item>
+        <item>"5 * 6"</item>
+    </string-array>
+    <string-array name="ex_large_screen_layout_value">
+        <item>"4|4"</item>
+        <item>"4|5"</item>
+        <item>"4|6"</item>
+        <item>"5|5"</item>
+        <item>"5|6"</item>
+    </string-array>
+    <string-array name="icon_size">
+        <item>@string/small_icon_size</item>
+        <item>@string/normal_icon_size</item>
+    </string-array>
+    <string-array name="icon_size_value">
+        <item>"0.85f"</item>
+        <item>"1.0f"</item>
+    </string-array>
+    <string-array name="app_category">
+        <item>"Vida"</item>
+        <item>"Comunicación"</item>
+        <item>"Sots.seti"</item>
+        <item>"Seguridad"</item>
+        <item>"Audio/lectura"</item>
+        <item>"Temas/Fondos"</item>
+        <item>"Revisión"</item>
+        <item>"Entrenamiento"</item>
+        <item>"Sus juegos"</item>
+        <item>"Otros"</item>
+    </string-array>
+    <string-array name="game_second_category">
+        <item>"Estrategia"</item>
+        <item>"Acción"</item>
+        <item>"Vuelo"</item>
+        <item>"Aventuras"</item>
+        <item>"Simulaciones"</item>
+        <item>"Otros"</item>
+        <item>"Mob.igry"</item>
+        <item>"Deporte"</item>
+        <item>"Rompecabezas"</item>
+        <item>"Escritorio"</item>
+    </string-array>
+
+
+
+
+
+
+
+
+
+
+
+    <array name="wallpapers"/>
+</resources>

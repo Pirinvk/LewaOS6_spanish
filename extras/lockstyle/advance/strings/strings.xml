@@ -1,0 +1,33 @@
+<strings>
+    <string name="short_date_format" value="M月d日 EEEE" />
+    <string name="long_date_format" value="yyyy年 M月d日" />
+    <string name="slide_up_camera" value="向上滑动到相机" />
+    <string name="slide_down_lock" value="" />
+  <!--    <string name="slide_down_lock" value="向下滑动解锁" /> -->
+    <string name="slide_down_call" value="向下滑动进入电话" />
+    <string name="slide_down_mess" value="向下滑动进入短信" />
+    <string name="air_quality" value="空气质量:" />
+    <string name="chinese_calendar_show" value="1"/>
+    <string name="chinese_calendar_format" value=" 农历NNNN"/>
+    <string name="week_offsetY" value="40"/>
+    <string name="week_offsetX" value="0"/>
+    <string name="week_typeface" value=""/>
+    <string name="unreadSMS" value="条未读消息"/>
+    <string name="missCALL" value="个未接电话"/>
+
+	<string name="time_0_2" value="深夜" />
+	<string name="time_3_5" value="凌晨" />
+	<string name="time_6_9" value="早晨" />
+	<string name="time_10_11" value="上午" />
+	<string name="time_12" value="中午" />
+	<string name="time_13_16" value="下午" />
+	<string name="time_17_18" value="傍晚" />
+	<string name="time_19_23" value="晚上" />
+	<string name="str_misscall" value="未接来电"/>
+	<string name="str_unread_sms" value="短信"/>
+	<string name="month_day_format" value="MM月dd日"/>
+	<string name="tips_right_move" value="向右滑动进入详情"/>
+	<string name="unknow_number" value="未知"/>
+	<string name="str_subzero" value="-"/>
+	
+</strings>

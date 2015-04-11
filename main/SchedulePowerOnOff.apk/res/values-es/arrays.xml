@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="alarm_set">
+        <item>"La alimentación se conecta en menos de 1 minuto"</item>
+        <item>"Cambio de modo está ajustado en %1$s a partir de ahora"</item>
+        <item>"Inclusión establecido por %2$s"</item>
+        <item>"Cambio de modo está ajustado en %1$s y %2$s a partir de ahora"</item>
+        <item>"Inclusión estableció %3$s"</item>
+        <item>"Cambio de modo está ajustado en %1$s y %3$s a partir de ahora"</item>
+        <item>"Inclusión establecido por %2$s y %3$s"</item>
+        <item>"Cambio de modo está ajustado en %1$s , %2$s y %3$s a partir de ahora"</item>
+        <item>"La alimentación se apaga en menos de 1 minuto"</item>
+        <item>"Off Mode se establece en %1$s a partir de ahora"</item>
+        <item>"Apagar el conjunto a través de %2$s"</item>
+        <item>"Off Mode se establece en %1$s y %2$s a partir de ahora"</item>
+        <item>"De apagar el aparato por medio del %3$s"</item>
+        <item>"Off Mode se establece en %1$s y %3$s a partir de ahora"</item>
+        <item>"Apagar el conjunto a través de %2$s y %3$s"</item>
+        <item>"Off Mode se establece en %1$s , %2$s y %3$s a partir de ahora"</item>
+    </string-array>
+</resources>

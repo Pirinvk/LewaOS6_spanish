@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">"Grabadora"</string>
+    <string name="record_your_message">"Grabe su mensaje"</string>
+    <string name="message_recorded">"Mensaje grabado"</string>
+    <string name="review_message">"Ver Mensaje"</string>
+    <string name="recording">"Registro"</string>
+    <string name="recording_stopped">"La grabación se detiene"</string>
+    <string name="storage_is_full">"Memoria llena"</string>
+    <string name="max_length_reached">"Llegó a la longitud máxima"</string>
+    <string name="insert_sd_card">"Inserte la tarjeta SD"</string>
+    <string name="min_available">"Izquierda %d minutos."</string>
+    <string name="sec_available">"Izquierda %d segundos."</string>
+    <string name="accept">"Utilice esta entrada"</string>
+    <string name="discard">"Cancelar"</string>
+    <string name="button_ok">"OKAY"</string>
+
+
+    <string name="audio_db_title_format">"DD.MM.AAAA HH:mm:ss"</string>
+    <string name="audio_db_artist_name">"Sus registros"</string>
+    <string name="audio_db_album_name">"Registro"</string>
+    <string name="audio_db_playlist_name">"Mis notas"</string>
+    <string name="error_sdcard_access">"No se puede acceder la tarjeta SD"</string>
+    <string name="error_app_internal">"Error de aplicación interna"</string>
+    <string name="error_mediadb_new_record">"Error al guardar la grabación de audio"</string>
+    <string name="error_app_recorder_occupied">"Grabadora utilizado por otra aplicación"</string>
+    <string name="unknown_artist_name">"Artista Desconocido"</string>
+    <string name="error_app_failed_title">"Error de escritura"</string>
+    <string name="tell_save_record_success">"Guardado"</string>
+    <string name="save_record">"Guardar"</string>
+    <string name="spaceIsLow_content">"El SD-tarjeta se queda sin espacio. Detener la grabación o borrar archivos de la tarjeta SD"</string>
+    <string name="cancel">"Cancelación"</string>
+    <string name="rename_record_file">"Cambie el nombre del archivo"</string>
+    <string name="file_already_exists">"El archivo ya existe"</string>
+    <string name="select_recording_format">"Seleccione la calidad de grabación"</string>
+    <string name="recording_format_high">"Alto"</string>
+    <string name="recording_format_mid">"Promedio"</string>
+    <string name="recording_format_low">"Pobre"</string>
+    <string name="three_mins_avail_total">"Totales disponibles 3 minutos"</string>
+    <string name="recorder_can_not_be_used">"La grabadora no puede ser utilizado"</string>
+    <string name="alert_delete_multiple">"Se eliminarán Estos registros"</string>
+    <string name="alert_delete_single">"Se borrará esta entrada"</string>
+    <string name="ok">"Aceptar"</string>
+    <string name="delete">"Quitar"</string>
+    <string name="deleting">"Eliminación"</string>
+    <string name="no_recording_file">"(No hay archivos)"</string>
+    <string name="recording_file_list">"Lista de archivos"</string>
+    <string name="recording_paused">"Grabación en pausa"</string>
+    <string name="record_title">"Registro"</string>
+    <string name="play_title">"Reproducción"</string>
+  
+    <string name="delete_selected">"Registrado %s"</string>
+
+
+    <string name="is_recording_can_not_use_play_function">"Durante la grabación, la reproducción no se puede utilizar"</string>
+    <string name="is_playing_can_not_use_record_function">"Reproducción de un archivo de audio, no se puede utilizar récord"</string>
+    <string name="menu_actionbar_selected_items">"%s seleccionado"</string>
+    <string name="menu_multichoice_select_all">"Seleccionar todo"</string>
+    <string name="menu_multichoice_clear_select">"Cancelar todo"</string>
+    <string name="recording_notitication">"Registro"</string>
+    <string name="pause_record">"Pausa"</string>
+
+    <string name="tv_prompt">"Sugerencia: Pulse el hogar para la grabación en segundo plano"</string>
+    <string name="sounder_file">"Grabación de archivos"</string>
+    <string name="filename_to_save">"Nombre del archivo: "</string>
+    <string name="save_confirm">"Guardar"</string>
+    <string name="cancel_save">"Cancelación"</string>
+    <string name="play_record">"Empezar a Grabar"</string>
+    <string name="cancel_save_toast_display">"Cancelar guardar la entrada"</string>
+    <string name="playing_record_toast">"Reproducción"</string>
+
+    <string name="default_name_saved">"Guardado con el nombre predeterminado"</string>
+    <string name="too_short_to_save">"El tiempo de grabación es demasiado corta, no se puede guardar"</string>
+    <string name="storage_problem_stop_record">"Error de almacenamiento, la grabación se interrumpe"</string>
+    <string name="file_name_special_characters">"No se puede ser salvados por el carácter específico"</string>
+    <string name="no_recording">"No registrado"</string>
+    <string name="file_suffix_problem">"El nombre del archivo de error, inténtalo de nuevo"</string>
+</resources>

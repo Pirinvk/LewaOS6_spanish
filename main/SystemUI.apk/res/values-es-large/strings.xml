@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="status_bar_clear_all_button">Borrar todos</string>
+    <string name="notifications_off_title">Las notificaciones son apagadas</string>
+    <string name="notifications_off_text">Haga clic aquí para volver a habilitar las notificaciones</string>
+</resources>

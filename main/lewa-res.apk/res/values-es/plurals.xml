@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<resources>
+  <plurals name="phone_goggles_countdown">
+    <item quantity="other">%d segundos</item>
+    <item quantity="one">%d segundos</item>
+  </plurals>
+</resources>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+     <string name="LewaGesture_app_name">"Gestos"</string>
+     <string name="hello_world1">"Hola Mundo!"</string>
+     <string name="action_settings">"Ajustes"</string>
+     <string name="two_fingers_slide">"Deslice dos dedos"</string>
+     <string name="three_fingers_slide">"Deslice tres dedos"</string>
+     <string name="screen_shot">"Captura de pantalla"</string>
+     <string name="screenshot_saving_ticker">"Guardando ..."</string>
+     <string name="screenshot_saving_title">"Guardando ..."</string>
+     <string name="screenshot_saving_text">"Guardando ..."</string>
+     <string name="screenshot_saved_title">"Captura de pantalla guardado"</string>
+     <string name="screenshot_saved_text">"Haga clic para ver"</string>
+     <string name="screenshot_failed_title">"Incapaz de tomar una captura de pantalla"</string>
+     <string name="screenshot_failed_text">"Incapaz de tomar una captura de pantalla. Almacenamiento ocupado"</string>
+     <string name="saving_screenshot_failed_title">"Error al guardar la captura de pantalla"</string>
+     <string name="screenshot_failed_storage_busy">"Almacenamiento ocupado"</string>
+     <string name="screenshot_failed_no_free_storage">"No hay suficiente almacenamiento"</string>
+     <string name="screenshot_failed_no_permission_access">"Privilegios suficientes para acceder al repositorio"</string>
+     <string name="screenshot_failed_no_permission_take_screenshot">"Privilegios insuficientes para hacer una captura de pantalla"</string>
+     <string name="screenshot_failed_screenshotwindow_busy">"Ventana pantalla bloqueada (depuración)"</string>
+     <string name="share">"Compártelo"</string>
+     <string name="screenshot_title">"Captura de pantalla"</string>
+     <string name="confirm_custom_screenshot">"Confirmar"</string>
+     <string name="toast_saving_screenshot_finished">"Captura de pantalla guarda en %1$s"</string>
+     <string name="toast_default_storage_busy">"No hay espacio en el dispositivo de almacenamiento por defecto"</string>
+     <string name="toast_storage_locaiton_changed">"Cambie el almacenamiento de capturas de pantalla de %1$s en %2$s?"</string>
+</resources>

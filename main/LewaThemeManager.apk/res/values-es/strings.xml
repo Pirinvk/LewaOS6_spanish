@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">"Temas"</string>
+    <string name="permlab_access_DrmThemeResources">"Fuentes Medios protegido por DRM"</string>
+    <string name="permdesc_access_DrmThemeResources">"/Permite que una aplicación lea el acceso a las fuentes de los medios de comunicación con DRM protegidos"</string>
+    <string name="permlab_set_theme">"Establezca el tema global"</string>
+    <string name="permdesc_set_theme">"Permite que la aplicación cambie el tema visual de su dispositivo"</string>
+    <string name="apply_font_failed">"No Fuente de aplicaciones"</string>
+</resources>

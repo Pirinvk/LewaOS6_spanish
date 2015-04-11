@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name_weather">"El Clima"</string>
+    <string name="settings">"Ajustes"</string>
+    <string name="temp_settings">"Los ajustes de temperatura"</string>
+    <string name="warn">"recordatorio"</string>
+    <string name="celsius">"Celsius℃"</string>
+
+    <string name="fahrenheit">"Fahrenheit℉"</string>
+
+
+    <string name="city_manage">"Gobernanza Urbana"</string>
+    <string name="note_pull_down">"Tire hacia abajo para actualizar"</string>
+    <string name="note_release_refresh">"Actualizaciones"</string>
+    <string name="note_refresh_loading">"Actualización"</string>
+    <string name="update_waiting">"Obtención de datos ..."</string>
+    <string name="no_network">"Compruebe la conexión de red"</string>
+    <string name="no_data">"Sin información"</string>
+    <string name="request_fail">"No se ha podido recuperar datos"</string>
+    <string name="parse_fail">"Los datos analíticos éxito"</string>
+    <string name="get_success">"Los datos se obtienen con éxito"</string>
+    <string name="btn_ok">"Aceptar"</string>
+    <string name="city_list">"Lista de ciudades"</string>
+    <string name="city_add">"Añadir ciudad"</string>
+    <string name="city_edit">"Editar ciudad"</string>
+    <string name="delete">"eliminación"</string>
+    <string name="one_at_least">"Por favor, seleccione al menos una ciudad"</string>
+
+    <string name="wind">"Viento"</string>
+    <string name="pressure">"Presión"</string>
+    <string name="visibility">"Visibilidad"</string>
+    <string name="humidity">"Humedad"</string>
+    <string name="sunrise">"Salida del sol"</string>
+    <string name="sunset">"Puesta del sol"</string>
+    <string name="air_pollution_index">"Índice de Contaminación"</string>
+
+
+
+
+
+    <string name="air_pm10_text">"Las partículas sólidas"</string>
+
+
+    <string name="air_publish">"Unidad: mg/m³ Publicado:"</string>
+    <string name="unknown">"desconocido."</string>
+    <string name="entercity">"Por favor ingrese un nombre de ciudad"</string>
+    <string name="hot_cities">"Lugares"</string>
+    <string name="contacts_cities">"Amigos de la ciudad"</string>
+    <string name="search_cities">"Buscar por ciudad"</string>
+    <string name="auto_location">"Ubicación"</string>
+    <string name="no_net">"Red no disponible"</string>
+    <string name="location_wait">"Localización, por favor espere ..."</string>
+    <string name="locate_fail">"Fracasado Localización de"</string>
+    <string name="sudden_weather_alert">"Advertencia súbita"</string>
+    <string name="already_know">"Se sabe"</string>
+    <string name="taday">"Hoy"</string>
+    <string name="tomorrow">"Mañana"</string>
+    <string name="time">"Tiempo"</string>
+    <string name="time_4x2">"Tiempo"</string>
+    <string name="lunar">"Luna"</string>
+    <string name="weather_no_data">"Sin información"</string>
+    <string name="weather_unknown">"Desconocido."</string>
+    <string name="no_weather_data">"Sin datos meteorológicos"</string>
+    <string name="v5_nolocation">"No tiene Ubicación"</string>
+    <string name="v5_add_city">"Haz clic para instalar"</string>
+    <string name="temporary">"Temporalmente"</string>
+    <string name="release">"Actualización"</string>
+    <string name="pressure_unit">" hPa"</string>
+    <string name="visibility_unit">" km"</string>
+    <string name="no_more_city_add">"No se puede agregar más ciudades"</string>
+    <string name="already_city_add">"La ciudad ya ha sido añadido"</string>
+    <string name="fields_add_fail">"Sólo cuatro"</string>
+    <string name="latest">"Cifras recientes"</string>
+    <string name="fields_add_success">"“%s”al principio"</string>
+    <string name="about_data_source">"Fuente de datos meteorológicos"</string>
+    <string name="thinkpage_provide">"Los datos meteorológicos proporcionados ThinkPage"</string>
+    <string name="late_night">"Abierto por la noche"</string>
+    <string name="before_dawn">"Amanecer"</string>
+    <string name="Morning">"Mañana"</string>
+
+    <string name="noon">"Es Medio Día"</string>
+
+    <string name="nightfall">"Oscuridad"</string>
+    <string name="evening">"Noche"</string>
+    <string name="app_name_weather_time">"El Clima"</string>
+    <string name="netWorkInvalid">"No hay red"</string>
+    <string name="no_city_data">"La ciudad no se añade"</string>
+    <string name="noWeatherInfo">"Sin información"</string>
+    <string name="sdcard_io_error">"Error de tarjeta SD"</string>
+</resources>

@@ -1,0 +1,5 @@
+<strings>
+    <string name="slide_down_answer" value="向下滑动接听" />
+    <string name="slide_down_hangup" value="向下滑动挂断" />
+    <string name="slide_down_reply" value="向下滑动回复" />
+</strings>

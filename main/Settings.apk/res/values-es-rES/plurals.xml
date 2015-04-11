@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="show_dev_countdown">
+        <item quantity="other">"Usted está en la %1$d pasos del estado desarrollador"</item>
+        <item quantity="one">"Usted está en el %1$d paso del estado desarrollador"</item>
+    </plurals>
+    <plurals name="lockpassword_password_requires_letters">
+        <item quantity="other">"La contraseña debe contener al menos %d letras"</item>
+        <item quantity="one">"La contraseña debe contener al menos una letra"</item>
+    </plurals>
+    <plurals name="lockpassword_password_requires_lowercase">
+        <item quantity="other">"La contraseña debe contener al menos %d letras minúsculas"</item>
+        <item quantity="one">"La contraseña debe contener al menos 1 letra minúscula"</item>
+    </plurals>
+    <plurals name="lockpassword_password_requires_uppercase">
+        <item quantity="other">"La contraseña debe contener al menos %d letras mayúsculas"</item>
+        <item quantity="one">"La contraseña debe contener al menos 1 letra mayúscula"</item>
+    </plurals>
+    <plurals name="lockpassword_password_requires_numeric">
+        <item quantity="other">"La contraseña debe contener al menos %d un solo dígito"</item>
+        <item quantity="one">"La contraseña debe contener al menos una individual dígitos"</item>
+    </plurals>
+    <plurals name="lockpassword_password_requires_symbols">
+        <item quantity="other">"La contraseña debe contener al menos %d especial símbolos"</item>
+        <item quantity="one">"La contraseña debe contener al menos un carácter especial"</item>
+    </plurals>
+    <plurals name="lockpassword_password_requires_nonletter">
+        <item quantity="other">"La contraseña debe contener al menos %d caracteres distintos de letras,"</item>
+        <item quantity="one">"La contraseña debe contener al menos 1 caracteres no alfanuméricos"</item>
+    </plurals>
+</resources>

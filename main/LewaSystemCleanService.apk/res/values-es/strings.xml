@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">"Sistemas de limpieza"</string>
+    <string name="menu_settings">"Ajustes"</string>
+    <string name="title_activity_main">"MainActivity"</string>
+    <string name="calculate_sdcard">"Verificación de tarjeta SD"</string>
+    <string name="calculate_size">"Cálculo del tamaño de la ..."</string>
+    <string name="clean_sdcard">"Purificación SD-Card"</string>
+    <string name="clean_sdcard_completed">"Purificación tarjeta SD se ha completado"</string>
+    <string name="clean_log_file_name">"Archivos de registro"</string>
+    <string name="clean_app_sdcard_cache_name">"Caché de la aplicación en la tarjeta SD"</string>
+    <string name="clean_sdcard_cache_name">"Los archivos de caché"</string>
+    <string name="clean_sdcard_empty_file_name">"Archivos vacíos"</string>
+    <string name="clean_sdcard_mtk_log_name">"Log MTK"</string>
+    <string name="clean_sdcard_thum_file_name">"Miniaturas de archivos"</string>
+</resources>

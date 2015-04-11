@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">"Birdview"</string>
+  <string name="mb">"MB"</string>
+    <string name="gb">"GB"</string>
+    <string name="nosim">"Sin datos de tráfico"</string>
+    <string name="nosim_set">"El límite no está establecido"</string>
+    <string name="used">"Usado"</string>
+    <string name="surplus">"Permanecer"</string>
+    <string name="noalarm">"Despertador"</string>
+    <string name="off">"OFF"</string>
+    <string name="on">"ON"</string>
+    <string name="alarm">"Despertador"</string>
+    <string name="power_on">"ON"</string>
+    <string name="power_surplus">"Permanecer"</string>
+    <string name="power_full">"Cargado"</string>
+    <string name="power_isfull">"Carga completa"</string>
+    <string name="power_h">"h"</string>
+    <string name="power_m">"m"</string>
+    <string name="torch">"Linterna"</string>
+    <string name="safe_scanning">"Escaneando..."</string>
+    <string name="safe_scanning_error">"Error Scan, intente de nuevo más tarde"</string>
+    <string name="safe_status_one">"Sin peligro"</string>
+    <string name="safe_status_two">"día(s) sin pruebas"</string>
+    <string name="safe_status_three">"Escanear"</string>
+    <string name="operation_choose">"Modo de selección"</string>
+    <string name="pre_operation_mode">"Ambos modos"</string>
+    <string name="left_sliding">"Deslizar izquierda bloqueo de la aplicación"</string>
+    <string name="right_sliding">"Deslice hacia la derecha el bloqueo de la aplicación"</string>
+    <string name="alarm_tips">"Pulsación larga se puede utilizar en el reloj de alarma"</string>
+    <string name="long_click_tips">"Mantenga pulsado para ver la información de la aplicación"</string>
+    <string name="clean_toast_str0">"Optimizado"</string>
+    <string name="clean_toast_str1">"Libre %1$d MB Disponible %2$d MB"</string>
+    <string name="pre_sense_mode">"Rotación automátic de conmutación"</string>
+    <string name="pre_summary_sense_mode">"Ajustes disponibles> gesto instalarse por separado"</string>
+</resources>
